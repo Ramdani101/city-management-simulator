@@ -70,6 +70,10 @@ int lebarLayar = 50;
 int jatahInteraksi = 3;
 int hari = 10;
 int uang = 0, populasi = 0, energi = 0, kebahagiaan = 0, pabrik = 0, rumah = 0, destinasiWisata = 0, sumberEnergi = 0;
+int pendapatan = pabrik * 3000;
+int pengeluaran = sumberEnergi*500;
+int energiMasuk = sumberEnergi*10;
+int energiKeluar = (pabrik*5) + (rumah*1);
 
 int main(){
     menuUtama();
@@ -115,6 +119,7 @@ void campaignMode(){
     sumberEnergi = 3;
 
 
+
     cout << "Pada suatu pagi kamu tiba-tiba terbangun ditempat yang asing \n"
     << "Tempat asing itu adalah kamar tidur walikota!! \n"
     << "Kamu melihat kecermin dan menyadari dirimu sedang berada pada raga walikota \n"
@@ -135,9 +140,10 @@ void campaignMode(){
         printTextTengah("Hari Ke - " + i+1, lebarLayar);
         cout << string(lebarLayar, '-') << endl;
 
-        cout << "Uang : $" << uang << " | +$" << 3000*pabrik; << "/hari \n";
+        cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< pengeluaran - pendapatan; << "/hari \n";
         cout << "Populasi : " << populasi << endl;
-        cout << "Energi : " << 
+        cout << "Energi : " << plusMinus(energiMasuk, energiKeluar) << energiKeluar-energiMasuk << "MW";
+        
         
     }
     

@@ -63,17 +63,22 @@ void setColor(int);
 void printDengan2GarisBawah(const string&);
 void printTextTengah(const string&, int);
 string plusMinus(int, int);
+void tampilanPilihan();
+void bangunFasilitas ();
+void terapkanKebijakan();
+void lihatPeta();
+void lihatJumlahFasilitas();
+void statistikPopulasi();
+void save();
+
 
 
 int pilihan = 0;
 int lebarLayar = 50;
 int jatahInteraksi = 3;
-int hari = 10;
-int uang = 0, populasi = 0, energi = 0, kebahagiaan = 0, pabrik = 0, rumah = 0, destinasiWisata = 0, sumberEnergi = 0;
-int pendapatan = pabrik * 3000;
-int pengeluaran = sumberEnergi*500;
-int energiMasuk = sumberEnergi*10;
-int energiKeluar = (pabrik*5) + (rumah*1);
+int uang = 0, energi = 0, kebahagiaan = 0, pabrik = 0, rumah = 0, destinasiWisata = 0, sumberEnergi = 0;
+int hari = 0;
+int hariTerkini = 0;
 
 int main(){
     menuUtama();
@@ -86,6 +91,7 @@ void menuUtama(){
     printDengan2GarisBawah(selamatDatang);
     cout << "1. Start New Game \n" << "2. Load \n" << "3. How to \n" << "4. Exit \n";
     setColor(7);
+    cout << endl;
     cout << "Pilihan : ";
     cin >> pilihan;
     switch (pilihan)
@@ -111,15 +117,20 @@ void campaignMode(){
 
     uang = 10000;
     energi = 30;
-    kebahagiaan = 70;
+    kebahagiaan = 50;
     pabrik = 5;
     rumah = 10;
-    populasi = rumah * 100;
     destinasiWisata = 5;
     sumberEnergi = 3;
-
-
-
+    hari = 10;
+    hariTerkini = 1;
+    int populasi = rumah*100;
+    int energiMasuk = sumberEnergi*10;
+    int energiKeluar = (pabrik*5) + (rumah*1);
+    int tingkatKebahagiaan = kebahagiaan + (destinasiWisata*5);
+    int pendapatan = pabrik * 3000;
+    int pengeluaran = sumberEnergi*500;
+    
     cout << "Pada suatu pagi kamu tiba-tiba terbangun ditempat yang asing \n"
     << "Tempat asing itu adalah kamar tidur walikota!! \n"
     << "Kamu melihat kecermin dan menyadari dirimu sedang berada pada raga walikota \n"
@@ -132,29 +143,70 @@ void campaignMode(){
     cin.ignore();
     cin.get();
 
-    for (int i = 0; i < hari; i++)
+    bool kembaliKeMenuUtama = false;
+    while (hariTerkini <= hari && !kembaliKeMenuUtama)
     {
-
+        int sisaInteraksi = jatahInteraksi;
         setColor(6);
         cout << string(lebarLayar, '-') << endl;
-        printTextTengah("Hari Ke - " + i+1, lebarLayar);
+        printTextTengah("Hari Ke - " + to_string(hariTerkini), lebarLayar);
         cout << string(lebarLayar, '-') << endl;
 
-        cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< pengeluaran - pendapatan; << "/hari \n";
+        cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< "$" << abs(pengeluaran - pendapatan) << "/hari \n";
         cout << "Populasi : " << populasi << endl;
-        cout << "Energi : " << plusMinus(energiMasuk, energiKeluar) << energiKeluar-energiMasuk << "MW";
+        cout << "Energi : " << plusMinus(energiMasuk, energiKeluar) << energiKeluar-energiMasuk << "MW \n";
+        cout << "Tingkat Kebahagiaan : " << tingkatKebahagiaan << endl; 
+        cout << endl;
         
+        while (sisaInteraksi > 0 && !kembaliKeMenuUtama)
+        {
+            setColor(6); cout << "Interaksi : " << sisaInteraksi << endl;
+            tampilanPilihan();
+            setColor(1); cout << "Pilihan : "; setColor(7);
+            cin >> pilihan;
+            switch (pilihan)
+            {
+            case 1:
+                bangunFasilitas();
+                sisaInteraksi--;
+                break;
+            case 2:
+                terapkanKebijakan();
+                sisaInteraksi--;
+                break;
+            case 3:
+                lihatPeta();
+                break;
+            case 4:
+                lihatJumlahFasilitas();
+                break;
+            case 5:
+                statistikPopulasi();
+                break;
+            case 6:
+                sisaInteraksi = 0;
+                break;
+            case 7:
+                save();
+                break;
+            case 8:
+                kembaliKeMenuUtama = true;
+                break;
+            default:
+                cout << "Pilihan tidak valid, silahkan coba lagi \n";
+                break;
+            }
+        }
+        
+        hariTerkini++;
+        cout << string(lebarLayar, '-') << endl;
         
     }
-    
 
-    cout << "Tekan 1 untuk kembali \n";
-    cin >> pilihan;
-    if (pilihan == 1)
-    {
-        menuUtama();
-    }
-    
+        if (kembaliKeMenuUtama)
+        {
+            menuUtama();
+        }
 
 }
 
@@ -203,9 +255,40 @@ void printTextTengah(const string& text, int lebar){
     {
         cout << string(padding, ' ');
     }
-    cout << text << endl
+    cout << text << endl;
 }
 
 string plusMinus(int i, int j){
     return (i > j)? "+" : "-";
+}
+
+void tampilanPilihan(){
+    cout << "\033[43m\033[30mPilih Tindakan : \033[0m \n";
+    setColor(4); cout << "1. "; setColor(7); cout << "Bangun Fasilitas (interaksi -1) \n";
+    setColor(4); cout << "2. "; setColor(7); cout << "Terapkan Kebijakan (interaksi -1) \n";
+    setColor(4); cout << "3. "; setColor(7); cout << "Lihat Peta Kota \n";
+    setColor(4); cout << "4. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
+    setColor(4); cout << "5. "; setColor(7); cout << "Statistik Populasi \n";
+    setColor(4); cout << "6. "; setColor(7); cout << "Akhiri Hari \n";
+    setColor(4); cout << "7. "; setColor(7); cout << "Save \n";
+    setColor(4); cout << "8. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
+}
+
+void bangunFasilitas (){
+    cout << "Sedang dalam tahap pengembangan \n";
+}
+void terapkanKebijakan(){
+    cout << "Sedang dalam tahap pengembangan \n";
+}
+void lihatPeta(){
+    cout << "Sedang dalam tahap pengembangan \n";
+}
+void lihatJumlahFasilitas(){
+    cout << "Sedang dalam tahap pengembangan \n";
+}
+void statistikPopulasi(){
+    cout << "Sedang dalam tahap pengembangan \n";
+}
+void save(){
+    cout << "Sedang dalam tahap pengembangan \n";
 }

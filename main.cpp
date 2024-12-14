@@ -79,6 +79,14 @@ int jatahInteraksi = 3;
 int uang = 0, energi = 0, kebahagiaan = 0, pabrik = 0, rumah = 0, destinasiWisata = 0, sumberEnergi = 0;
 int hari = 0;
 int hariTerkini = 0;
+char petaKota[6][6] = {
+    {'O','P','P','P','D','D'},
+    {'O','O','O','O','D','D'},
+    {'O','R','R','R','D','R'},
+    {'E','O','R','O','O','O'},
+    {'E','R','R','R','R','R'},
+    {'E','O','O','O','O','O'},
+};
 
 int main(){
     menuUtama();
@@ -118,7 +126,7 @@ void campaignMode(){
     uang = 10000;
     energi = 30;
     kebahagiaan = 50;
-    pabrik = 5;
+    pabrik = 3;
     rumah = 10;
     destinasiWisata = 5;
     sumberEnergi = 3;
@@ -154,7 +162,7 @@ void campaignMode(){
 
         cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< "$" << abs(pengeluaran - pendapatan) << "/hari \n";
         cout << "Populasi : " << populasi << endl;
-        cout << "Energi : " << plusMinus(energiMasuk, energiKeluar) << energiKeluar-energiMasuk << "MW \n";
+        cout << "Energi : " << plusMinus(energiMasuk, energiKeluar) << abs(energiKeluar-energiMasuk) << "MW \n";
         cout << "Tingkat Kebahagiaan : " << tingkatKebahagiaan << endl; 
         cout << endl;
         
@@ -281,7 +289,42 @@ void terapkanKebijakan(){
     cout << "Sedang dalam tahap pengembangan \n";
 }
 void lihatPeta(){
-    cout << "Sedang dalam tahap pengembangan \n";
+    int baris =6;
+    int kolom =6;
+    setColor(6); cout << string(25,'-') << endl;
+    for (int i = 0; i < baris; i++)
+    {
+        for (int j = 0; j < kolom; j++)
+        {
+            switch (petaKota[i][j])
+            {
+            case 'R':
+                setColor(13); cout << petaKota[i][j] << " ";
+                break;
+            case 'P':
+                setColor(12); cout << petaKota[i][j] << " ";
+                break;
+            case 'E':
+                setColor(10); cout << petaKota[i][j] << " ";
+                break;
+            case 'D':
+                setColor(11); cout << petaKota[i][j] << " ";
+                break;
+            default:
+                setColor(7); cout << petaKota[i][j] << " ";
+                break;
+            }
+        }
+        cout << endl;
+    }
+    setColor(6); cout << string(25,'-') << endl;
+    cout << endl;
+    cout << "Keterangan : \n";
+    setColor(12); cout << "P"; setColor(7); cout <<" = Pabrik \n";
+    setColor(13); cout << "R"; setColor(7); cout <<" = Rumah \n";
+    setColor(10); cout << "E"; setColor(7); cout <<" = Sumber Energi \n";
+    setColor(11); cout << "D"; setColor(7); cout <<" = Destinasi Wisata \n";
+    cout << endl;
 }
 void lihatJumlahFasilitas(){
     cout << "Sedang dalam tahap pengembangan \n";

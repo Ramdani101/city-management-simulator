@@ -67,7 +67,7 @@ void tampilanPilihan();
 void bangunFasilitas ();
 void terapkanKebijakan();
 void lihatPeta();
-void lihatJumlahFasilitas();
+void lihatJumlahFasilitas(int*,int*,int*,int*);
 void statistikPopulasi();
 void save();
 
@@ -186,7 +186,7 @@ void campaignMode(){
                 lihatPeta();
                 break;
             case 4:
-                lihatJumlahFasilitas();
+                lihatJumlahFasilitas(&pabrik, &rumah, &sumberEnergi, &destinasiWisata);
                 break;
             case 5:
                 statistikPopulasi();
@@ -326,8 +326,14 @@ void lihatPeta(){
     setColor(11); cout << "D"; setColor(7); cout <<" = Destinasi Wisata \n";
     cout << endl;
 }
-void lihatJumlahFasilitas(){
-    cout << "Sedang dalam tahap pengembangan \n";
+void lihatJumlahFasilitas(int* p, int* r, int* e, int* d){
+    setColor(6); cout << string(25, '-') << endl;
+    setColor(7);
+    cout << "Pabrik : " << *p << endl;
+    cout << "Rumah : " << *r << endl;
+    cout << "Sumber Energi : " << *e << endl;
+    cout << "Destinasi Wisata : " << *d << endl;
+    setColor(6); cout << string(25, '-') << endl;
 }
 void statistikPopulasi(){
     cout << "Sedang dalam tahap pengembangan \n";

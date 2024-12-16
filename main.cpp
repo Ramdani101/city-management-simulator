@@ -51,7 +51,7 @@ panjang yang kita masukkan diparameter int
 13 = Ungu
 14 = Kuning
 15 = Putih Cerah
-//komen coba git
+//coba git
 */
 
 void menuUtama();

@@ -65,12 +65,12 @@ void printTextTengah(const string&, int);
 string plusMinus(int, int);
 void tampilanPilihan();
 void bangunFasilitas ();
-void terapkanKebijakan();
+void terapkanKebijakan(int*,int*,int*, int*, int*, int*, int*, int*, int*);
 void lihatPeta();
 void lihatJumlahFasilitas(int*,int*,int*,int*);
 void statistikPopulasi();
 void save();
-void kebijakanKota();
+void festivalTermina(int*, int, int*, int*);
 
 
 
@@ -78,7 +78,8 @@ int pilihan = 0;
 int lebarLayar = 50;
 int jatahInteraksi = 3;
 int uang = 0, energi = 0, kebahagiaan = 0, pabrik = 0, rumah = 0, destinasiWisata = 0, sumberEnergi = 0;
-int hari = 0;
+int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
+int kebahagiaanSementara = 0;
 int hariTerkini = 0;
 char petaKota[6][6] = {
     {'O','P','P','P','D','D'},
@@ -133,19 +134,20 @@ void campaignMode(){
     sumberEnergi = 3;
     hari = 10;
     hariTerkini = 1;
+    int pajakPabrik = 0;
     int populasi = rumah*100;
-    int energiMasuk = sumberEnergi*10;
+    int energiMasuk = sumberEnergi*10 + sumberEnergiTambahan;
     int energiKeluar = (pabrik*5) + (rumah*1);
-    int tingkatKebahagiaan = kebahagiaan + (destinasiWisata*5);
-    int pendapatan = pabrik * 3000;
-    int pengeluaran = sumberEnergi*500;
+    int tingkatKebahagiaan = kebahagiaan + (destinasiWisata*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
+    int pendapatan = pabrik * (3000 + pajakPabrik);
+    int pengeluaran = (sumberEnergi*500) + biayaKerjasama;
     
     cout << "Pada suatu pagi kamu tiba-tiba terbangun ditempat yang asing \n"
     << "Tempat asing itu adalah kamar tidur walikota!! \n"
     << "Kamu melihat kecermin dan menyadari dirimu sedang berada pada raga walikota \n"
-    <<  "Saat sedang kondisi terkejut, kemudian muncullah pesan dari ponselmu yang berisi \n"
-    << "-Walikota yang sebenarnya akan kembali dalam waktu 10 hari lagi- \n"
-    << "nasib kota ini berada di tanganmu sekarang !!! \n";
+    <<  "Saat sedang kondisi terkejut, kemudian muncullah pesan dari ponselmu yang berisi \n";
+    setColor(5); cout << "---Walikota yang sebenarnya akan kembali dalam waktu 10 hari lagi--- \n";
+    setColor(7); cout << "nasib kota ini berada di tanganmu sekarang !!! \n";
     cout << endl;
 
     cout << "Tekan apa saja untuk melanjutkan \n";
@@ -160,6 +162,11 @@ void campaignMode(){
         cout << string(lebarLayar, '-') << endl;
         printTextTengah("Hari Ke - " + to_string(hariTerkini), lebarLayar);
         cout << string(lebarLayar, '-') << endl;
+
+        if (hariTerkini != 1)
+        {
+            uang += (pendapatan-pengeluaran);
+        }
 
         cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< "$" << abs(pengeluaran - pendapatan) << "/hari \n";
         cout << "Populasi : " << populasi << endl;
@@ -180,7 +187,7 @@ void campaignMode(){
                 sisaInteraksi--;
                 break;
             case 2:
-                terapkanKebijakan();
+                terapkanKebijakan(&sisaInteraksi, &kebahagiaanPemilikPabrik, &pajakPabrik, &sumberEnergiTambahan, &biayaKerjasama, &populasiTambahan, &uang, &kebahagiaanSementara, &hariTerkini);
                 sisaInteraksi--;
                 break;
             case 3:
@@ -286,9 +293,7 @@ void tampilanPilihan(){
 void bangunFasilitas (){
     cout << "Sedang dalam tahap pengembangan \n";
 }
-void terapkanKebijakan(){
-    cout << "Sedang dalam tahap pengembangan \n";
-}
+
 void lihatPeta(){
     int baris =6;
     int kolom =6;
@@ -343,6 +348,74 @@ void save(){
     cout << "Sedang dalam tahap pengembangan \n";
 }
 
-void kebijakanKota(){
+void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
+    /*
+    int a = sisa interaksi, int b = kebahagiaan pemilik pabrik, int c = pajakPabrik, int d = sumberEnergiTambahan, int e = biayaKerjasama
+    int f = populasiTambahan, int g = uang, int h = kebahagiaanSementara, int i = hariTerkini
+    */ 
+    setColor(6);
+    printTextTengah("KEBIJAKAN KOTA", lebarLayar);
+    string(lebarLayar,'-');
+    cout << endl;
+    setColor(7); cout << "1. Tingkatkan pajak untuk pabrik \n";
+    cout << "   Efek : \n"; 
+    setColor(2); cout << "Penghasilan tiap pabrik +$1000/hari \n";
+    setColor(4); cout << "Kebahagaian -15% \n";
+    cout << endl;
+    setColor(7); cout << "2. Mengadakan Festival of Termina selama 3 hari \n";
+    cout << "   Efek : \n"; 
+    setColor(2); cout << "Kebahagiaan +15% \n";
+    setColor(4); cout << "Uang -$5000/hari \n";
+    cout << endl;
+    setColor(7); cout << "3. Bekerja sama dengan Tony Stark untuk pengadaan sumber energi \n";
+    cout << "   Efek : \n"; 
+    setColor(2); cout << "Energi +20MW/Hari \n";
+    setColor(4); cout << "Uang -$1500/hari \n";
+    cout << endl;
+    setColor(7); cout << "4. Bagikan sprey gratis ke setiap warga \n";
+    cout << "   Efek : \n"; 
+    setColor(2); cout << "Populasi +300 \n";
+    setColor(4); cout << "Uang -$2000 \n";
+    setColor(7); cout << "5. Batal\n";
     
+     setColor(1); cout << "Pilihan : ";
+     cin >> pilihan;
+     switch (pilihan)
+     {
+     case 1:
+        *c += 1000;
+        *b += -15;
+        *a--;
+        break;
+     case 2:
+        *a--;
+        festivalTermina(i, 3, g, h);
+        break;
+     case 3:
+        *d += 20;
+        *e += 1500;
+        *a--;
+        break;
+     case 4:
+        *f += 300;
+        *g -= 2000;
+        break;
+     default:
+        break;
+     }
+
 };
+
+void festivalTermina(int* c, int durasi, int *a, int *b) {
+    // int a = uang, int b = kebahagiaanSementari
+    if (durasi == 0) {
+        *b = 0;
+        return;
+        
+    }
+    *a -= 5000;
+    *b = 15;
+
+    festivalTermina(c, durasi - 1, a, b);
+}
+

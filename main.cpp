@@ -135,7 +135,7 @@ void campaignMode(){
     hari = 10;
     hariTerkini = 1;
     int pajakPabrik = 0;
-    int populasi = rumah*100;
+    int populasi = (rumah*100) + populasiTambahan;
     int energiMasuk = sumberEnergi*10 + sumberEnergiTambahan;
     int energiKeluar = (pabrik*5) + (rumah*1);
     int tingkatKebahagiaan = kebahagiaan + (destinasiWisata*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
@@ -167,6 +167,15 @@ void campaignMode(){
         {
             uang += (pendapatan-pengeluaran);
         }
+
+        //Untuk update stat
+        int populasi = (rumah*100) + populasiTambahan;
+        int energiMasuk = sumberEnergi*10 + sumberEnergiTambahan;
+        int energiKeluar = (pabrik*5) + (rumah*1);
+        int tingkatKebahagiaan = kebahagiaan + (destinasiWisata*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
+        int pendapatan = pabrik * (3000 + pajakPabrik);
+        int pengeluaran = (sumberEnergi*500) + biayaKerjasama;
+        
 
         cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< "$" << abs(pengeluaran - pendapatan) << "/hari \n";
         cout << "Populasi : " << populasi << endl;
@@ -355,7 +364,7 @@ void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, i
     */ 
     setColor(6);
     printTextTengah("KEBIJAKAN KOTA", lebarLayar);
-    string(lebarLayar,'-');
+    cout << string(lebarLayar,'-');
     cout << endl;
     setColor(7); cout << "1. Tingkatkan pajak untuk pabrik \n";
     cout << "   Efek : \n"; 
@@ -376,6 +385,7 @@ void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, i
     cout << "   Efek : \n"; 
     setColor(2); cout << "Populasi +300 \n";
     setColor(4); cout << "Uang -$2000 \n";
+    cout << endl;
     setColor(7); cout << "5. Batal\n";
     
      setColor(1); cout << "Pilihan : ";
@@ -386,19 +396,39 @@ void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, i
         *c += 1000;
         *b += -15;
         *a--;
+        setColor(13);
+        cout << string(lebarLayar, '-') << endl;
+        printTextTengah("KEBIJAKAN TELAH DITERAPKAN", lebarLayar);
+        cout << string(lebarLayar, '-') << endl;
+        setColor(7);
         break;
      case 2:
         *a--;
         festivalTermina(i, 3, g, h);
+        setColor(13);
+        cout << string(lebarLayar, '-') << endl;
+        printTextTengah("KEBIJAKAN TELAH DITERAPKAN", lebarLayar);
+        cout << string(lebarLayar, '-') << endl;
+        setColor(7);
         break;
      case 3:
         *d += 20;
         *e += 1500;
         *a--;
+        setColor(13);
+        cout << string(lebarLayar, '-') << endl;
+        printTextTengah("KEBIJAKAN TELAH DITERAPKAN", lebarLayar);
+        cout << string(lebarLayar, '-') << endl;
+        setColor(7);
         break;
      case 4:
         *f += 300;
         *g -= 2000;
+        setColor(13);
+        cout << string(lebarLayar, '-') << endl;
+        printTextTengah("KEBIJAKAN TELAH DITERAPKAN", lebarLayar);
+        cout << string(lebarLayar, '-') << endl;
+        setColor(7);
         break;
      default:
         break;

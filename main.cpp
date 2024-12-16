@@ -70,6 +70,7 @@ void lihatPeta();
 void lihatJumlahFasilitas(int*,int*,int*,int*);
 void statistikPopulasi();
 void save();
+void kebijakanKota();
 
 
 
@@ -341,3 +342,7 @@ void statistikPopulasi(){
 void save(){
     cout << "Sedang dalam tahap pengembangan \n";
 }
+
+void kebijakanKota(){
+    
+};

@@ -337,7 +337,7 @@ void robohkanFasilitas (){
     setColor(1); cout << "Pilihan : "; setColor(7);
     cin >> konfirmasi;
     cout << endl;
-    
+
     if (konfirmasi == 1)
     {
     index = 0;
@@ -359,18 +359,23 @@ void robohkanFasilitas (){
                         {
                             case 'P':
                                 setColor(4); cout << index << ". Pabrik (" << i+1 << "," << j <<") ";
+                                pabrik=pabrik-1;
                                 break;
                             case 'R':
                                 setColor(5); cout << index << ". Rumah (" << i+1 << "," << j+1 <<") ";
+                                rumah=rumah-1;
                                 break;
                             case 'E':
                                 setColor(10); cout << index << ". Sumber Energi (" << i+1 << "," << j+1 <<") ";
+                                sumberEnergi=sumberEnergi-1;
                                 break;
                             case 'D':
                                 setColor(11); cout << index << ". Destinasi Wisata (" << i+1 << "," << j+1 <<") ";
+                                destinasiWisata=destinasiWisata-1;
                                 break;
                         }
-                        cout << "berhasil dihapus \n";
+                        cout << "berhasil dirobohkan \n";
+                        uang=uang-5;
                         petaKota[i][j] = 'O';
                     }
                     

@@ -65,6 +65,7 @@ string plusMinus(int, int);
 void tampilanPilihan();
 void bangunFasilitas (char petaKota[6][6], int &uang, int &Jpabrik, int &Jrumah, int &JdestinasiWisata, int &Jsumberenergi);
 void terapkanKebijakan();
+void robohkanFasilitas();
 void lihatPeta();
 void lihatJumlahFasilitas(int*,int*,int*,int*);
 void statistikPopulasi();
@@ -194,21 +195,25 @@ void campaignMode(){
                 sisaInteraksi--;
                 break;
             case 3:
-                lihatPeta();
+                robohkanFasilitas();
+                sisaInteraksi--;
                 break;
             case 4:
-                lihatJumlahFasilitas(&Jpabrik, &Jrumah, &JsumberEnergi, &JdestinasiWisata);
+                lihatPeta();
                 break;
             case 5:
-                statistikPopulasi();
+                lihatJumlahFasilitas(&pabrik, &rumah, &sumberEnergi, &destinasiWisata);
                 break;
             case 6:
-                sisaInteraksi = 0;
+                statistikPopulasi();
                 break;
             case 7:
-                save();
+                sisaInteraksi = 0;
                 break;
             case 8:
+                save();
+                break;
+            case 9:
                 kembaliKeMenuUtama = true;
                 break;
             default:
@@ -285,12 +290,13 @@ void tampilanPilihan(){
     cout << "\033[43m\033[30mPilih Tindakan : \033[0m \n";
     setColor(4); cout << "1. "; setColor(7); cout << "Bangun Fasilitas (interaksi -1) \n";
     setColor(4); cout << "2. "; setColor(7); cout << "Terapkan Kebijakan (interaksi -1) \n";
-    setColor(4); cout << "3. "; setColor(7); cout << "Lihat Peta Kota \n";
-    setColor(4); cout << "4. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
-    setColor(4); cout << "5. "; setColor(7); cout << "Statistik Populasi \n";
-    setColor(4); cout << "6. "; setColor(7); cout << "Akhiri Hari \n";
-    setColor(4); cout << "7. "; setColor(7); cout << "Save \n";
-    setColor(4); cout << "8. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
+    setColor(4); cout << "3. "; setColor(7); cout << "Robohkan Fasilitas (interaksi -1) \n";
+    setColor(4); cout << "4. "; setColor(7); cout << "Lihat Peta Kota \n";
+    setColor(4); cout << "5. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
+    setColor(4); cout << "6. "; setColor(7); cout << "Statistik Populasi \n";
+    setColor(4); cout << "7. "; setColor(7); cout << "Akhiri Hari \n";
+    setColor(4); cout << "8. "; setColor(7); cout << "Save \n";
+    setColor(4); cout << "9. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
 }
 
 void bangunFasilitas (char petaKota[6][6], int &uang, int &Jpabrik, int &Jrumah, int &JdestinasiWisata, int &Jsumberenergi){
@@ -424,6 +430,94 @@ void bangunFasilitas (char petaKota[6][6], int &uang, int &Jpabrik, int &Jrumah,
 
 void terapkanKebijakan(){
     cout << "Sedang dalam tahap pengembangan \n";
+}
+void robohkanFasilitas (){
+    cout << endl;
+    int pilihFasilitas;
+    int konfirmasi;
+    int baris = 6;
+    int kolom = 6;
+    int index = 0;
+    cout << "\033[43m\033[30mPilih Fasilitas : \033[0m \n";
+    for (int i = 0; i < baris; i++)
+    {
+        for (int j = 0; j < kolom; j++)
+        {
+            index=index+1;
+            switch (petaKota[i][j])
+            {
+            case 'P':
+                setColor(4); cout << index << ". Pabrik (" << i+1 << "," << j <<") \n";
+                break;
+            case 'R':
+                setColor(5); cout << index << ". Rumah (" << i+1 << "," << j+1 <<") \n";
+                break;
+            case 'E':
+                setColor(10); cout << index << ". Sumber Energi (" << i+1 << "," << j+1 <<") \n";
+                break;
+            case 'D':
+                setColor(11); cout << index << ". Destinasi Wisata (" << i+1 << "," << j+1 <<") \n";
+                break;
+            default:
+                index--;
+                break;
+            }
+        }
+    }
+    setColor(1); cout << "Pilihan : "; setColor(7);
+    cin >> pilihFasilitas;
+    cout << endl;
+
+    setColor(6); cout << "Apakah anda yakin? \n";
+    setColor(4); cout << "1. "; cout << "Ya \n";
+    setColor(7); cout << "2. "; cout << "Tidak \n";
+    setColor(1); cout << "Pilihan : "; setColor(7);
+    cin >> konfirmasi;
+    cout << endl;
+    
+    if (konfirmasi == 1)
+    {
+    index = 0;
+        for (int i = 0; i < baris; i++)
+            {
+                for (int j = 0; j < kolom; j++)
+                {
+                    switch (petaKota[i][j])
+                    {
+                    case 'O':
+                        break;
+                    default:
+                        index=index+1;
+                    break;
+                    }
+                    if (index == pilihFasilitas)
+                    {
+                        switch (petaKota[i][j])
+                        {
+                            case 'P':
+                                setColor(4); cout << index << ". Pabrik (" << i+1 << "," << j <<") ";
+                                break;
+                            case 'R':
+                                setColor(5); cout << index << ". Rumah (" << i+1 << "," << j+1 <<") ";
+                                break;
+                            case 'E':
+                                setColor(10); cout << index << ". Sumber Energi (" << i+1 << "," << j+1 <<") ";
+                                break;
+                            case 'D':
+                                setColor(11); cout << index << ". Destinasi Wisata (" << i+1 << "," << j+1 <<") ";
+                                break;
+                        }
+                        cout << "berhasil dihapus \n";
+                        petaKota[i][j] = 'O';
+                    }
+                    
+                }
+            }
+            cout << endl;
+    }else
+    {
+        robohkanFasilitas();
+    }
 }
 void lihatPeta(){
     int baris =6;

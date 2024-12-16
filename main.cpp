@@ -418,7 +418,7 @@ void bangunFasilitas (char petaKota[6][6], int &uang, int &Jpabrik, int &Jrumah,
                     }
                 }
                 break;
-        }
+        } //pusing
     }
 }
 

@@ -209,7 +209,7 @@ void campaignMode(){
                 lihatPeta();
                 break;
             case 5:
-                lihatJumlahFasilitas(&pabrik, &rumah, &sumberEnergi, &destinasiWisata);
+                lihatJumlahFasilitas(&Jpabrik, &Jrumah, &JsumberEnergi, &JdestinasiWisata);
                 break;
             case 6:
                 statistikPopulasi();
@@ -242,17 +242,13 @@ void campaignMode(){
             {
                 pekerja -= 100;
                 JpabrikOn++;
-                cout << "JpabrikOn : " << JpabrikOn << endl;
             }
 
             if (pekerja > 100 && i < JsumberEnergi)
             {
                 pekerja -=100;
                 JsumberEnergiOn++;
-                cout << "JsumberEnergiOn : " << JsumberEnergiOn << endl;
             }
-            cout << "pekerja : " << pekerja << endl;
-            cout << "i = " << i << endl;
         }
         uang = uang + (JpabrikOn * 3000) - (JsumberEnergiOn*500);
         pendapatan = JpabrikOn * 3000;
@@ -275,13 +271,12 @@ void campaignMode(){
         {
             rumahCD = 1;
         }
-        
     } 
 
-        if (kembaliKeMenuUtama)
-        {
-            menuUtama();
-        }
+    if (kembaliKeMenuUtama)
+    {
+        menuUtama();
+    }
 
 }
 
@@ -504,7 +499,7 @@ void bangunFasilitas (char petaKota[6][6]){
 void terapkanKebijakan(){
     cout << "Sedang dalam tahap pengembangan \n";
 }
-void robohkanFasilitas (){
+void robohkanFasilitas(){
     cout << endl;
     int pilihFasilitas;
     int konfirmasi;

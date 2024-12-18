@@ -67,7 +67,7 @@ string plusMinus(int, int);
 void tampilanPilihan();
 void bangunFasilitas();
 void terapkanKebijakan();
-void robohkanFasilitas(int*);
+void robohkanFasilitas(int *);
 void lihatPeta();
 void lihatJumlahFasilitas(int *, int *, int *, int *);
 void statistikPopulasi();
@@ -342,7 +342,8 @@ void terapkanKebijakan()
 {
     cout << "Sedang dalam tahap pengembangan \n";
 }
-void robohkanFasilitas (int* interaksi){
+void robohkanFasilitas(int *interaksi)
+{
     cout << endl;
     int pilihFasilitas;
     int konfirmasi;
@@ -379,72 +380,87 @@ void robohkanFasilitas (int* interaksi){
             }
         }
     }
-    setColor(7); cout << index+1 << ". Back" << "\n";
-    setColor(1); cout << "Pilihan : "; setColor(7);
+    setColor(7);
+    cout << index + 1 << ". Back" << "\n";
+    setColor(1);
+    cout << "Pilihan : ";
+    setColor(7);
     cin >> pilihFasilitas;
     cout << endl;
 
-    if (pilihFasilitas == index+1)
+    if (pilihFasilitas == index + 1)
     {
         *interaksi = *interaksi + 1;
-    }else{
-        setColor(6); cout << "Apakah anda yakin? \n";
-        setColor(4); cout << "1. "; cout << "Ya \n";
-        setColor(7); cout << "2. "; cout << "Tidak \n";
-        setColor(1); cout << "Pilihan : "; setColor(7);
+    }
+    else
+    {
+        setColor(6);
+        cout << "Apakah anda yakin? \n";
+        setColor(4);
+        cout << "1. ";
+        cout << "Ya \n";
+        setColor(7);
+        cout << "2. ";
+        cout << "Tidak \n";
+        setColor(1);
+        cout << "Pilihan : ";
+        setColor(7);
         cin >> konfirmasi;
         cout << endl;
 
         if (konfirmasi == 1)
         {
-        index = 0;
+            index = 0;
             for (int i = 0; i < baris; i++)
+            {
+                for (int j = 0; j < kolom; j++)
                 {
-                    for (int j = 0; j < kolom; j++)
+                    switch (petaKota[i][j])
+                    {
+                    case 'O':
+                        break;
+                    default:
+                        index = index + 1;
+                        break;
+                    }
+                    if (index == pilihFasilitas)
                     {
                         switch (petaKota[i][j])
                         {
-                        case 'O':
+                        case 'P':
+                            setColor(4);
+                            cout << index << ". Pabrik (" << i + 1 << "," << j << ") ";
+                            pabrik = pabrik - 1;
                             break;
-                        default:
-                            index=index+1;
-                        break;
+                        case 'R':
+                            setColor(5);
+                            cout << index << ". Rumah (" << i + 1 << "," << j + 1 << ") ";
+                            rumah = rumah - 1;
+                            break;
+                        case 'E':
+                            setColor(10);
+                            cout << index << ". Sumber Energi (" << i + 1 << "," << j + 1 << ") ";
+                            sumberEnergi = sumberEnergi - 1;
+                            break;
+                        case 'D':
+                            setColor(11);
+                            cout << index << ". Destinasi Wisata (" << i + 1 << "," << j + 1 << ") ";
+                            destinasiWisata = destinasiWisata - 1;
+                            break;
                         }
-                        if (index == pilihFasilitas)
-                        {
-                            switch (petaKota[i][j])
-                            {
-                                case 'P':
-                                    setColor(4); cout << index << ". Pabrik (" << i+1 << "," << j <<") ";
-                                    pabrik=pabrik-1;
-                                    break;
-                                case 'R':
-                                    setColor(5); cout << index << ". Rumah (" << i+1 << "," << j+1 <<") ";
-                                    rumah=rumah-1;
-                                    break;
-                                case 'E':
-                                    setColor(10); cout << index << ". Sumber Energi (" << i+1 << "," << j+1 <<") ";
-                                    sumberEnergi=sumberEnergi-1;
-                                    break;
-                                case 'D':
-                                    setColor(11); cout << index << ". Destinasi Wisata (" << i+1 << "," << j+1 <<") ";
-                                    destinasiWisata=destinasiWisata-1;
-                                    break;
-                            }
-                            cout << "berhasil dirobohkan \n";
-                            uang=uang-5;
-                            petaKota[i][j] = 'O';
-                        }
-                        
+                        cout << "berhasil dirobohkan \n";
+                        uang = uang - 5;
+                        petaKota[i][j] = 'O';
                     }
                 }
-                cout << endl;
-        }else
+            }
+            cout << endl;
+        }
+        else
         {
             robohkanFasilitas(interaksi);
         }
     }
-   
 }
 void lihatPeta()
 {
@@ -552,7 +568,7 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pendapatan)
     bool isBreak;
     if (hariEvent[0] == hariTerkini)
     {
-        cout << "Perhatian !!! Banjir bandang sedang melanda kota!" << endl;
+        printDengan2GarisBawah("Perhatian !!! Banjir bandang sedang melanda kota!");
         setColor(4);
         cout << "1.";
         setColor(7);
@@ -566,22 +582,23 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pendapatan)
         cout << endl;
         if (respon == 1)
         {
-            cout << "Banjir telah diatasi (-$1500)";
+            cout << "Banjir telah diatasi (-$1500)" << endl;
             uang = uang - 1500;
         }
         if (respon == 2)
         {
             *pendapatan = *pendapatan / 2;
+            cout << "Banjir telah menurunkan produktivitas di kotamu (-50'%' penghasilan dalam 1 hari)" << endl;
         }
     }
-    if (hariEvent[0]+1 == hariTerkini)
+    if (hariEvent[0] + 1 == hariTerkini)
     {
-        *pendapatan = pabrik*3000;
+        *pendapatan = pabrik * 3000;
     }
-    
+
     if (hariEvent[1] == hariTerkini)
     {
-        cout << "Perhatian !!! Salah satu pabrik di kotamu terbakar! (-1 Pabrik)" << endl;
+        printDengan2GarisBawah("Perhatian !!! Salah satu pabrik di kotamu terbakar! (-1 Pabrik)");
         pabrik = pabrik - 1;
         for (int i = 0; i < 6; i++)
         {
@@ -602,7 +619,7 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pendapatan)
     }
     if (hariEvent[2] == hariTerkini)
     {
-        cout << "Perhatian !!! Agus Buntung datang ke kotamu!" << endl;
+        printDengan2GarisBawah("Perhatian !!! Agus Buntung datang ke kotamu!");
         setColor(4);
         cout << "1.";
         setColor(7);
@@ -616,6 +633,7 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pendapatan)
         cout << endl;
         if (respon == 1)
         {
+            cout << "Agus Buntung pergi meninggalkan kotamu (-$500)" << endl;
             uang = uang - 500;
         }
         if (respon == 2)
@@ -637,12 +655,12 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pendapatan)
                     }
                 }
             }
+            cout << "100 orang merasa tidak nyaman sehingga mereka pergi (-1 Rumah)" << endl;
         }
     }
     if (hariEvent[3] == hariTerkini)
     {
-        cout << "Perhatian !!!! Presiden datang ke kotamu. Beliau datang dengan membawa koper berwarna hitam, apakah ini merupakan pertanda baik? (+$5000)" << endl;
+        printDengan2GarisBawah("Perhatian !!!! Presiden datang ke kotamu. Apakah ini merupakan pertanda baik? (+$5000)");
         uang = uang + 5000;
     }
-
 }

@@ -490,19 +490,19 @@ void festivalTermina(int *a, int *b, int &c) {
 void pajak(int* c, int* b, int* a){
     *c += 1000;
     *b += -15;
-    *a--;
+    *a = *a-1;
 };
 
 void kerjasama(int* d, int* e, int* a){
     *d += 20;
     *e += 1500;
-    *a--;
+    *a = *a-1;
 };
 
 void sprey(int* f, int* g, int* a){
     *f += 300;
     *g -= 2000;
-    *a--;
+    *a = *a-1;
 };
 
 void fungsiKosong(int* a, int* b, int* c){
@@ -510,7 +510,8 @@ void fungsiKosong(int* a, int* b, int* c){
 
 void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
     // a = sisaInteraksi, b = kebahagiaanPemilikPabrik, c = pajakPabrik, 
-    // d = sumberEnergiTambahan, e = biayaKerjasama, f = populasiTambahan, g = uang, h = kebahagiaanSementarai, i = hariTerkini
+    // d = sumberEnergiTambahan, e = biayaKerjasama, f = populasiTambahan, g = uang, h = kebahagiaanSementarai, 
+    //i = hariTerkini
     setColor(6);
     printTextTengah("KEBIJAKAN KOTA YANG SUDAH DITERAPKAN", lebarLayar);
     cout << string(lebarLayar,'-');
@@ -554,7 +555,7 @@ void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int*
                 {
                     *c = 0;
                     *b = 0;
-                    *a--;
+                    *a = *a-1;
                 }else if (vectorKebijakanJalan.at(i).namaKebijakan == "festival")
                 {
                     cekFestivalTermina = false;
@@ -563,11 +564,11 @@ void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int*
                 {
                     *d = 0;
                     *e = 0;
-                    *a--;
+                    *a = *a-1;
                 }else if (vectorKebijakanJalan.at(i).namaKebijakan == "sprey")
                 {
                     *f = 0;
-                    *a--;
+                    *a = *a-1;
                 }else{}
 
                 vectorKebijakan.push_back(vectorKebijakanJalan.at(i));

@@ -70,7 +70,7 @@ void lihatPeta();
 void lihatJumlahFasilitas(int*,int*,int*,int*);
 void statistikPopulasi();
 void save();
-void festivalTermina(int*, int, int*, int*);
+void festivalTermina(int*, int*, int&);
 
 
 
@@ -81,6 +81,8 @@ int uang = 0, energi = 0, kebahagiaan = 0, pabrik = 0, rumah = 0, destinasiWisat
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
 int kebahagiaanSementara = 0;
 int hariTerkini = 0;
+int durasiFestival = 3;
+bool cekFestivalTermina = false;
 char petaKota[6][6] = {
     {'O','P','P','P','D','D'},
     {'O','O','O','O','D','D'},
@@ -168,6 +170,11 @@ void campaignMode(){
             uang += (pendapatan-pengeluaran);
         }
 
+        if (cekFestivalTermina)
+        {
+            festivalTermina(&uang, &kebahagiaanSementara, durasiFestival);
+        }else{}
+        
         //Untuk update stat
         int populasi = (rumah*100) + populasiTambahan;
         int energiMasuk = sumberEnergi*10 + sumberEnergiTambahan;
@@ -176,7 +183,7 @@ void campaignMode(){
         int pendapatan = pabrik * (3000 + pajakPabrik);
         int pengeluaran = (sumberEnergi*500) + biayaKerjasama;
         
-
+        setColor(6);
         cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< "$" << abs(pengeluaran - pendapatan) << "/hari \n";
         cout << "Populasi : " << populasi << endl;
         cout << "Energi : " << plusMinus(energiMasuk, energiKeluar) << abs(energiKeluar-energiMasuk) << "MW \n";
@@ -404,7 +411,7 @@ void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, i
         break;
      case 2:
         *a--;
-        festivalTermina(i, 3, g, h);
+        cekFestivalTermina = true;
         setColor(13);
         cout << string(lebarLayar, '-') << endl;
         printTextTengah("KEBIJAKAN TELAH DITERAPKAN", lebarLayar);
@@ -436,16 +443,19 @@ void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, i
 
 };
 
-void festivalTermina(int* c, int durasi, int *a, int *b) {
-    // int a = uang, int b = kebahagiaanSementari
-    if (durasi == 0) {
-        *b = 0;
-        return;
-        
-    }
+void festivalTermina(int *a, int *b, int &c) {
     *a -= 5000;
     *b = 15;
-
-    festivalTermina(c, durasi - 1, a, b);
+    c--;
+    if (c == 0)
+    {
+        //setColor(11) = warna aqua
+        setColor(11); cout << "Festival Termina sudah Berakhir!!! Terima Kasih Pa Wali Kota \n";
+        cekFestivalTermina = false;
+        *b = 0;
+    }else{
+        setColor(11); cout << "Festival Termina sedang berlangsung!! \n";
+    }
+    
 }
 

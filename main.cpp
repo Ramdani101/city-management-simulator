@@ -577,7 +577,10 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pendapatan)
         cout << "2.";
         setColor(7);
         cout << "Abaikan (Income berkurang 50'%' dalam 1 hari) \n";
+        cout << endl;
+        setColor(1);
         cout << "Pilihan : ";
+        setColor(7);
         cin >> respon;
         cout << endl;
         if (respon == 1)

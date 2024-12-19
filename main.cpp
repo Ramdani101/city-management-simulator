@@ -63,13 +63,14 @@ void printDengan2GarisBawah(const string&);
 void printTextTengah(const string&, int);
 string plusMinus(int, int);
 void tampilanPilihan();
-void bangunFasilitas (char petaKota[6][6]);
+void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]);
 void terapkanKebijakan();
 void robohkanFasilitas(int*);
 void lihatPeta();
 void lihatJumlahFasilitas(int*,int*,int*,int*);
 void statistikPopulasi();
 void save();
+void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY);
 
 int pilihan = 0;
 int lebarLayar = 50;
@@ -95,11 +96,11 @@ struct Index
 struct bangunan 
 {
     char alias;
-    int biaya, pekerja;
+    int biaya, populasi, pekerja, energi, pendapatan, kebahagiaan;
     Index index[32];
 };
 
-bangunan rumah = {'R', 500, 0}, pabrik = {'P', 3000, 50}, destinasiWisata = {'D', 1500, 0}, sumberEnergi = {'E', 1500, 50};
+bangunan rumah = {'R', 500, 100, 0, 1, 0, 0}, pabrik = {'P', 3000, 0, 50, 5, 3000, 5}, destinasiWisata = {'D', 1500, 0, 0, 0, 0, 5}, sumberEnergi = {'E', 1500, 0, 50, 10, 500};
 
 
 int main(){
@@ -194,8 +195,7 @@ void campaignMode(){
             switch (pilihan)
             {
             case 1:
-                bangunFasilitas(petaKota);
-                sisaInteraksi--;
+                bangunFasilitas(&sisaInteraksi, petaKota);
                 break;
             case 2:
                 terapkanKebijakan();
@@ -230,32 +230,34 @@ void campaignMode(){
         }
         
         hariTerkini++;
-        // code code di bawah ini untuk menghitung sisa resource dan di tambah untuk besok - zaki
-        populasi = Jrumah*100;
-        JpabrikOn = 0; // JpabrikOn dan JsumberEnergiOn untuk menentukan apakah mereka aktif atau enggak
+        // code code di bawah ini untuk menghitung sisa resource dan di tambah untuk besok
+        // JpabrikOn dan JsumberEnergiOn untuk menentukan apakah mereka aktif atau enggak - zaki
+        populasi = Jrumah*rumah.populasi;
+        JpabrikOn = 0;
         JsumberEnergiOn = 0;
         pekerja = populasi;
 
-        for(int i = 0; i < Jpabrik + JsumberEnergi;i++) //ini untuk menentukan berapa banyak pabrik dan sumber energi yang aktif
+        for(int i = 0; i < Jpabrik + JsumberEnergi;i++)
         {
-            if (pekerja > 100 && i < Jpabrik)
+            if (pekerja > pabrik.pekerja && i < Jpabrik)
             {
-                pekerja -= 100;
+                pekerja -= pabrik.pekerja;
                 JpabrikOn++;
             }
 
-            if (pekerja > 100 && i < JsumberEnergi)
+            if (pekerja > sumberEnergi.pekerja && i < JsumberEnergi)
             {
-                pekerja -=100;
+                pekerja -=sumberEnergi.pekerja;
                 JsumberEnergiOn++;
             }
         }
-        uang = uang + (JpabrikOn * 3000) - (JsumberEnergiOn*500);
-        pendapatan = JpabrikOn * 3000;
-        pengeluaran = JsumberEnergiOn*500;
-        energiMasuk = JsumberEnergiOn*10;
-        energiKeluar = (JpabrikOn*5) + (Jrumah*1);
-        tingkatKebahagiaan = tingkatKebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5);
+        uang = uang + (JpabrikOn * pabrik.pendapatan) - (JsumberEnergiOn*sumberEnergi.pendapatan);
+        pendapatan = JpabrikOn * pabrik.pendapatan;
+        pengeluaran = JsumberEnergiOn*sumberEnergi.pendapatan;
+        energiMasuk = JsumberEnergiOn*sumberEnergi.energi;
+        energiKeluar = (JpabrikOn*pabrik.energi) + (Jrumah*rumah.energi);
+        tingkatKebahagiaan = tingkatKebahagiaan + (JdestinasiWisata*destinasiWisata.kebahagiaan) - (JpabrikOn*pabrik.kebahagiaan);
+
         if(tingkatKebahagiaan < 50)//untuk menghitung mundur dan menghapus sebuah rumah
         {
             cout << "";
@@ -264,7 +266,7 @@ void campaignMode(){
             {
                 rumahCD = 1;
                 Jrumah--;
-                petaKota[rumah.index[Jrumah].y][rumah.index[Jrumah].y] = 'O';
+                petaKota[rumah.index[Jrumah].y][rumah.index[Jrumah].x] = 'O';
             }
         }
         else 
@@ -345,154 +347,82 @@ void tampilanPilihan(){
     setColor(4); cout << "9. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
 }
 
-void bangunFasilitas (char petaKota[6][6]){
+void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
     int pilihan = 0, X = 0, Y = 0;
     cout << "Pilih bangunan yang ingin di bangun:\n";
-    setColor(12); cout << "1. Pabrik\n"; setColor(7); cout << "Biaya : $3,000\nEnergi : -5MW/hari\nUang : +$3,000/hari\nPekerja : -100\n";
-    setColor(13); cout << "2. Rumah\n"; setColor(7); cout << "Biaya : $500\nPopulasi : +100\nEnergi : -1MW/hari\n";
-    setColor(10); cout << "3. Sumber energi\n"; setColor(7); cout << "Biaya : $1,000\nEnergi : +10MW/hari\nUang : -$500/hari\nPekerja : -100\n";
-    setColor(11); cout << "4. Destinasi wisata\n"; setColor(7); cout << "Biaya : $1,500\nKebahagiaan : +5%\n";
-    while (pilihan < 1 || pilihan > 4)
+    setColor(12); cout << "1. Pabrik\n"; setColor(7); cout << "Biaya : $" << pabrik.biaya << "\nEnergi : -" << pabrik.energi << "MW/hari\nUang : +$" << pabrik.pendapatan << "/hari\nPekerja : -" << pabrik.pekerja << "\nKebahagiaan : -" << pabrik.kebahagiaan << "%\n\n";
+    setColor(13); cout << "2. Rumah\n"; setColor(7); cout << "Biaya : $" << rumah.biaya << "\nPopulasi : +" << rumah.populasi << "\nEnergi : -" << rumah.energi << "MW/hari\n\n";
+    setColor(10); cout << "3. Sumber energi\n"; setColor(7); cout << "Biaya : $" << sumberEnergi.biaya << "\nEnergi : +" << sumberEnergi.energi << "MW/hari\nUang : -$" << sumberEnergi.pendapatan << "/hari\nPekerja : -" << sumberEnergi.pekerja << "\n\n";
+    setColor(11); cout << "4. Destinasi wisata\n"; setColor(7); cout << "Biaya : $" << destinasiWisata.biaya << "\nKebahagiaan : +" << destinasiWisata.kebahagiaan << "%\n\n";
+    cout << "5. Batal\n\n";
+    while (pilihan < 1 || pilihan > 5)
     {
         setColor(1); cout << "Pilihan : "; setColor(7);
         cin >> pilihan;
         switch (pilihan)
         {
-            case 1: if (uang < 3000 && pekerja < 50)
-                {
-                    setColor(12); cout << "Resource anda tidak cukup\n"; setColor(7);
-                    pilihan = 0;
-                }
-                else
-                {
-                    lihatPeta();
-                    int i = 0;
-                    while(i == 0){
-                        cout << "Tentukan kordinat lahan\n";
-                        cout << "baris: ";
-                        cin >> X;
-                        cout << "kolom: ";
-                        cin >> Y;
-                        if (petaKota[X-1][Y-1] == 'O')
-                        {
-                            petaKota[X-1][Y-1] = pabrik.alias;
-                            Jpabrik++;
-                            pabrik.index[Jpabrik-1].x = X-1;
-                            pabrik.index[Jpabrik-1].y = Y-1;
-                            uang-=3000;
-                            return;
-                        }
-                        else
-                        {
-                            setColor(12); cout << "Lahan masih ada bangunan\n\n"; setColor(7);
-                            pilihan = 0;
-                        }
-                    }
-                }
+            case 1:
+                menuBangunFasilitas(pSisaInteraksi, pabrik.alias, pabrik.biaya, pabrik.pekerja, &Jpabrik, pabrik.index[Jpabrik].x, pabrik.index[Jpabrik].y);
                 break;
-
-            case 2: if (uang < 500)
-                {
-                    setColor(12); cout << "Resource anda tidak cukup\n"; setColor(7);
-
-                    pilihan = 0;
-                }
-                else
-                {
-                    lihatPeta();
-                    int i = 0;
-                    while(i == 0){
-                        cout << "Tentukan kordinat\n";
-                        cout << "baris: ";
-                        cin >> X;
-                        cout << "kolom: ";
-                        cin >> Y;
-                        if (petaKota[X-1][Y-1] == 'O')
-                        {
-                            petaKota[X-1][Y-1] = rumah.alias;
-                            rumah.index[Jrumah-1].x = X-1;
-                            rumah.index[Jrumah-1].y = Y-1;
-                            Jrumah++;
-                            uang-=500;
-                            cout << "Berhasil membangun\n";
-                            return;
-                        }
-                        else
-                        {
-                            setColor(12); cout << "Lahan masih ada bangunan\n\n"; setColor(7);
-                            pilihan = 0;
-                        }
-                    }
-                }
+            case 2:
+                menuBangunFasilitas(pSisaInteraksi, rumah.alias, rumah.biaya, rumah.pekerja, &Jrumah, rumah.index[Jrumah].x, rumah.index[Jrumah].y);
                 break;
-
-            case 3: if (uang < 1500 && pekerja < 50)
-                {
-                    setColor(13); cout << "Resource anda tidak cukup\n"; setColor(7);
-                    pilihan = 0;
-                }
-                else
-                {
-                    lihatPeta();
-                    int i = 0;
-                    while(i == 0){
-                        cout << "Tentukan kordinat lahan\n";
-                        cout << "baris: ";
-                        cin >> X;
-                        cout << "kolom: ";
-                        cin >> Y;
-                        if (petaKota[X-1][Y-1] = 'O')
-                        {
-                            petaKota[X-1][Y-1] = sumberEnergi.alias;
-                            JsumberEnergi++;
-                            sumberEnergi.index[JsumberEnergi-1].x = X-1;
-                            sumberEnergi.index[JsumberEnergi-1].y = Y-1;
-                            uang-=1500;
-                            cout << "Berhasil membangun\n";
-                            return;
-                        }
-                        else
-                        {
-                            setColor(12); cout << "Lahan masih ada bangunan\n\n"; setColor(7);
-                            pilihan = 0;
-                        }
-                    }
-                }
+            case 3: 
+                menuBangunFasilitas(pSisaInteraksi, sumberEnergi.alias, sumberEnergi.biaya, sumberEnergi.pekerja, &JsumberEnergi, sumberEnergi.index[JsumberEnergi].x, sumberEnergi.index[JsumberEnergi].y);
                 break;
-                case 4: if (uang < 1500)
-                {
-                    setColor(13); cout << "Resource anda tidak cukup\n"; setColor(7);
-                    pilihan = 0;
-                }
-                else
-                {
-                    lihatPeta();
-                    int i = 0;
-                    while(i == 0){
-                        cout << "Tentukan kordinat lahan\n";
-                        cout << "baris: ";
-                        cin >> X;
-                        cout << "kolom: ";
-                        cin >> Y;
-                        if (petaKota[X-1][Y-1] == 'O')
-                        {
-                            petaKota[X-1][Y-1] = destinasiWisata.alias;
-                            JdestinasiWisata++;
-                            destinasiWisata.index[JdestinasiWisata-1].x = X-1;
-                            destinasiWisata.index[JdestinasiWisata-1].y = Y-1;
-                            uang-=1500;
-                            cout << "Berhasil membangun\n";
-                            return;
-                        }
-                        else
-                        {
-                            setColor(12); cout << "Lahan masih ada bangunan\n\n"; setColor(7);
-                            pilihan = 0;
-                        }
-                    }
-                }
+            case 4: 
+                menuBangunFasilitas(pSisaInteraksi, destinasiWisata.alias, destinasiWisata.biaya, destinasiWisata.pekerja, &JdestinasiWisata, destinasiWisata.index[JdestinasiWisata].x, destinasiWisata.index[JdestinasiWisata].y);
                 break;
+            case 5:
+            return;
         } //pusing
+        return;
+    }
+}
+
+void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY)
+{
+    int X = 0, Y = 0;
+    if (uang < biaya && pekerja < pekerjaFasilitas)
+    {
+        setColor(12); cout << "Resource anda tidak cukup\n"; setColor(7);
+        pilihan = 0;
+    }
+    else
+    {
+        lihatPeta();
+    }
+    int i = 0;
+    while(i == 0){
+        cout << "Tentukan kordinat lahan\n";
+        cout << "baris: ";
+        cin >> X;
+        cout << "kolom: ";
+        cin >> Y;
+        if (petaKota[X-1][Y-1] == 'O')
+        {
+            petaKota[X-1][Y-1] = alias;
+            total++;
+            targetKordinatX = X-1;
+            targetKordinatY = Y-1;
+            uang-=biaya;
+            setColor(13);
+            cout << string(lebarLayar, '-') << endl;
+            printTextTengah("BANGUNAN BERHASIL DIBANGUN", lebarLayar);
+            cout << string(lebarLayar, '-') << endl;
+            setColor(7);
+            *pSisaInteraksi = *pSisaInteraksi - 1;
+            return;
+        }
+        else
+        {
+            setColor(12);
+            cout << string(lebarLayar, '-') << endl;
+            printTextTengah("LAHAN TERSEBUT MASIH ADA BANGUNAN", lebarLayar);
+            cout << string(lebarLayar, '-') << endl;
+            setColor(7);
+            pilihan = 0;
+        }
     }
 }
 

@@ -5,6 +5,7 @@
 #include <ctime>
 #include <cstdint>
 #include <windows.h>
+#include <vector>
 using namespace std;
 
 /*
@@ -64,13 +65,20 @@ void printTextTengah(const string&, int);
 string plusMinus(int, int);
 void tampilanPilihan();
 void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]);
-void terapkanKebijakan();
+void terapkanKebijakan(int*,int*,int*, int*, int*, int*, int*, int*, int*);
 void robohkanFasilitas(int*);
 void lihatPeta();
 void lihatJumlahFasilitas(int*,int*,int*,int*);
 void statistikPopulasi();
 void save();
 void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY);
+void festivalTermina(int*, int*, int&);
+void pajak(int*, int*, int*);
+void kerjasama(int*, int*, int*);
+void sprey(int*, int*, int*);
+void fungsiKosong(int*, int*, int*);
+void cabutKebijakan(int*,int*,int*, int*, int*, int*, int*, int*, int*);
+
 
 int pilihan = 0;
 int lebarLayar = 50;
@@ -78,8 +86,11 @@ int jatahInteraksi = 3;
 int uang = 0, energi = 0, kebahagiaan = 0, pekerja = 0;
 int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
-int hari = 0;
+int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
 int hariTerkini = 0;
+int kebahagiaanSementara = 0;
+int durasiFestival = 4;
+bool cekFestivalTermina = false;
 char petaKota[6][6] = {
     {'O','P','P','P','D','D'},
     {'O','O','O','O','D','D'},
@@ -102,6 +113,31 @@ struct bangunan
 
 bangunan rumah = {'R', 500, 100, 0, 1, 0, 0}, pabrik = {'P', 3000, 0, 50, 5, 3000, 5}, destinasiWisata = {'D', 1500, 0, 0, 0, 0, 5}, sumberEnergi = {'E', 1500, 0, 50, 10, 500};
 
+struct Kebijakan{
+    int urutan;
+    string namaKebijakan, keuntungan, kekurangan, displayKebijakan, displayKebijakanJalan;
+    void (*fungsi)(int*, int*, int*);
+    void (*fungsiKhusus)(int*, int*, int&);
+    void (*fungsiPengurangan)(int*);
+
+    void jalankanBiasa(int* a, int* b, int* c){
+        return fungsi(a,b,c);
+    }
+
+    void jalankanKhusus(int* a){
+        return fungsiPengurangan(a);
+    }
+
+};
+
+
+Kebijakan kebijakan1 = {1, "pajak", "Penghasilan tiap pabrik +$1000/hari", "Kebahagaian -15%", "Tingkatkan pajak untuk pabrik","Peningkatan pajak untuk pabrik", pajak};
+Kebijakan kebijakan2 = {2, "festival", "Kebahagiaan +15%", "Uang -$5000/hari", "Mengadakan Festival of Termina selama 3 hari", "Festival of Termina",fungsiKosong, festivalTermina};
+Kebijakan kebijakan3 = {3, "kerjasama", "Energi +20MW/Hari", "Uang -$1500/hari", "Bekerja sama dengan Tony Stark untuk pengadaan sumber energi", "Kerja sama dengan Tony Stark", kerjasama};
+Kebijakan kebijakan4 = {4, "sprey", "Populasi +300", "Uang -$2000", "Bagikan sprey gratis ke setiap warga", "Pembagian Spray Gratis", sprey};
+
+vector<Kebijakan> vectorKebijakan = {kebijakan1,kebijakan2,kebijakan3,kebijakan4};
+vector<Kebijakan> vectorKebijakanJalan = {};
 
 int main(){
     menuUtama();
@@ -149,21 +185,24 @@ void campaignMode(){
     JsumberEnergiOn = JsumberEnergi;
     hari = 10;
     hariTerkini = 1;
-    int populasi = Jrumah*100;
+    int pajakPabrik = 0;
+    int populasi = (Jrumah*100) + populasiTambahan;
     int pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
-    int energiMasuk = JsumberEnergiOn*10;
+    int energiMasuk = (JsumberEnergiOn*10) + sumberEnergiTambahan;
     int energiKeluar = (JpabrikOn*5) + (Jrumah*1);
-    int tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5);
-    int pendapatan = JpabrikOn * 3000;
-    int pengeluaran = JsumberEnergiOn*500;
+    int tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
+    int pendapatan = (JpabrikOn * 3000) + pajakPabrik;
+    int pengeluaran = (JsumberEnergiOn*500) + biayaKerjasama;
     int rumahCD = 1;
     
     cout << "Pada suatu pagi kamu tiba-tiba terbangun ditempat yang asing \n"
     << "Tempat asing itu adalah kamar tidur walikota!! \n"
     << "Kamu melihat kecermin dan menyadari dirimu sedang berada pada raga walikota \n"
-    <<  "Saat sedang kondisi terkejut, kemudian muncullah pesan dari ponselmu yang berisi \n"
-    << "-Walikota yang sebenarnya akan kembali dalam waktu 10 hari lagi- \n"
-    << "nasib kota ini berada di tanganmu sekarang !!! \n";
+    <<  "Saat sedang kondisi terkejut, kemudian muncullah pesan dari ponselmu yang berisi \n";
+    setColor(5);
+    cout << "-Walikota yang sebenarnya akan kembali dalam waktu 10 hari lagi- \n";
+    setColor(7);
+    cout << "nasib kota ini berada di tanganmu sekarang !!! \n";
     cout << endl;
 
     cout << "Tekan apa saja untuk melanjutkan \n";
@@ -177,10 +216,19 @@ void campaignMode(){
         setColor(6);
         cout << string(lebarLayar, '-') << endl;
         printTextTengah("Hari Ke - " + to_string(hariTerkini), lebarLayar);
-        
+        setColor(6); cout << string(lebarLayar, '-') << endl;
+
+        if (cekFestivalTermina)
+        {
+            festivalTermina(&uang, &kebahagiaanSementara, durasiFestival);
+        }else{}
+
+        //agar ketika 1 hari setelah festival termina diterapkan langsung ada efeknya
+        tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*destinasiWisata.kebahagiaan) - (JpabrikOn*pabrik.kebahagiaan) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
+
         while (sisaInteraksi > 0 && !kembaliKeMenuUtama)
         {
-            setColor(6); cout << string(lebarLayar, '-') << endl;
+            setColor(6);
             cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< "$" << abs(pengeluaran - pendapatan) << "/hari \n";
             cout << "Populasi : " << populasi << endl;
             cout << "Pekerja : " << pekerja << endl;
@@ -198,29 +246,31 @@ void campaignMode(){
                 bangunFasilitas(&sisaInteraksi, petaKota);
                 break;
             case 2:
-                terapkanKebijakan();
-                sisaInteraksi--;
+                terapkanKebijakan(&sisaInteraksi, &kebahagiaanPemilikPabrik, &pajakPabrik, &sumberEnergiTambahan, &biayaKerjasama, &populasiTambahan, &uang, &kebahagiaanSementara, &hariTerkini);
                 break;
             case 3:
                 robohkanFasilitas(&sisaInteraksi);
                 sisaInteraksi--;
                 break;
             case 4:
-                lihatPeta();
+                cabutKebijakan(&sisaInteraksi, &kebahagiaanPemilikPabrik, &pajakPabrik, &sumberEnergiTambahan, &biayaKerjasama, &populasiTambahan, &uang, &kebahagiaanSementara, &hariTerkini);
                 break;
             case 5:
-                lihatJumlahFasilitas(&Jpabrik, &Jrumah, &JsumberEnergi, &JdestinasiWisata);
+                lihatPeta();
                 break;
             case 6:
-                statistikPopulasi();
+                lihatJumlahFasilitas(&Jpabrik, &Jrumah, &JsumberEnergi, &JdestinasiWisata);
                 break;
             case 7:
-                sisaInteraksi = 0;
+                statistikPopulasi();
                 break;
             case 8:
-                save();
+                sisaInteraksi = 0;
                 break;
             case 9:
+                save();
+                break;
+            case 10:
                 kembaliKeMenuUtama = true;
                 break;
             default:
@@ -232,7 +282,7 @@ void campaignMode(){
         hariTerkini++;
         // code code di bawah ini untuk menghitung sisa resource dan di tambah untuk besok
         // JpabrikOn dan JsumberEnergiOn untuk menentukan apakah mereka aktif atau enggak - zaki
-        populasi = Jrumah*rumah.populasi;
+        populasi = (Jrumah*rumah.populasi) + populasiTambahan;
         JpabrikOn = 0;
         JsumberEnergiOn = 0;
         pekerja = populasi;
@@ -251,12 +301,12 @@ void campaignMode(){
                 JsumberEnergiOn++;
             }
         }
-        uang = uang + (JpabrikOn * pabrik.pendapatan) - (JsumberEnergiOn*sumberEnergi.pendapatan);
-        pendapatan = JpabrikOn * pabrik.pendapatan;
-        pengeluaran = JsumberEnergiOn*sumberEnergi.pendapatan;
-        energiMasuk = JsumberEnergiOn*sumberEnergi.energi;
+        uang = uang + (JpabrikOn * (pabrik.pendapatan + pajakPabrik)) - (JsumberEnergiOn*sumberEnergi.pendapatan) - biayaKerjasama;
+        pendapatan = JpabrikOn * (pabrik.pendapatan + pajakPabrik);
+        pengeluaran = JsumberEnergiOn*sumberEnergi.pendapatan + biayaKerjasama;
+        energiMasuk = JsumberEnergiOn*sumberEnergi.energi + sumberEnergiTambahan;
         energiKeluar = (JpabrikOn*pabrik.energi) + (Jrumah*rumah.energi);
-        tingkatKebahagiaan = tingkatKebahagiaan + (JdestinasiWisata*destinasiWisata.kebahagiaan) - (JpabrikOn*pabrik.kebahagiaan);
+        tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*destinasiWisata.kebahagiaan) - (JpabrikOn*pabrik.kebahagiaan) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
 
         if(tingkatKebahagiaan < 50)//untuk menghitung mundur dan menghapus sebuah rumah
         {
@@ -339,12 +389,13 @@ void tampilanPilihan(){
     setColor(4); cout << "1. "; setColor(7); cout << "Bangun Fasilitas (interaksi -1) \n";
     setColor(4); cout << "2. "; setColor(7); cout << "Terapkan Kebijakan (interaksi -1) \n";
     setColor(4); cout << "3. "; setColor(7); cout << "Robohkan Fasilitas (interaksi -1) \n";
-    setColor(4); cout << "4. "; setColor(7); cout << "Lihat Peta Kota \n";
-    setColor(4); cout << "5. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
-    setColor(4); cout << "6. "; setColor(7); cout << "Statistik Populasi \n";
-    setColor(4); cout << "7. "; setColor(7); cout << "Akhiri Hari \n";
-    setColor(4); cout << "8. "; setColor(7); cout << "Save \n";
-    setColor(4); cout << "9. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
+    setColor(4); cout << "4. "; setColor(7); cout << "Cabut Kebijakan (interaksi -1) \n";
+    setColor(4); cout << "5. "; setColor(7); cout << "Lihat Peta Kota \n";
+    setColor(4); cout << "6. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
+    setColor(4); cout << "7. "; setColor(7); cout << "Statistik Populasi \n";
+    setColor(4); cout << "8. "; setColor(7); cout << "Akhiri Hari \n";
+    setColor(4); cout << "9. "; setColor(7); cout << "Save \n";
+    setColor(4); cout << "10. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
 }
 
 void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
@@ -583,3 +634,196 @@ void statistikPopulasi(){
 void save(){
     cout << "Sedang dalam tahap pengembangan \n";
 }
+
+void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
+    // a = sisaInteraksi, b = kebahagiaanPemilikPabrik, c = pajakPabrik, 
+    // d = sumberEnergiTambahan, e = biayaKerjasama, f = populasiTambahan, g = uang, h = kebahagiaanSementarai, i = hariTerkini
+    setColor(6);
+    printTextTengah("KEBIJAKAN KOTA", lebarLayar);
+    cout << string(lebarLayar,'-');
+    cout << endl;
+
+        
+    for (int i = 0; i < vectorKebijakan.size(); i++)
+    {
+        if (i+1 == vectorKebijakan.size())
+        {
+            vectorKebijakan.at(i).urutan = i+1;
+            setColor(7); cout << i+1 << ". " << vectorKebijakan.at(i).displayKebijakan << endl;
+            cout << "   Efek : \n"; 
+            setColor(2); cout << vectorKebijakan.at(i).keuntungan << endl;
+            setColor(4); cout << vectorKebijakan.at(i).kekurangan << endl;
+            cout << endl;
+            setColor(7); cout << i+2 << ". Batal\n";
+            cout << endl;
+        }else{
+            vectorKebijakan.at(i).urutan = i+1;
+            setColor(7); cout << i+1 << ". " << vectorKebijakan.at(i).displayKebijakan << endl;
+            cout << "   Efek : \n"; 
+            setColor(2); cout << vectorKebijakan.at(i).keuntungan << endl;
+            setColor(4); cout << vectorKebijakan.at(i).kekurangan << endl;
+            cout << endl;
+        }
+    }
+    
+
+     setColor(1); cout << "Pilihan : ";
+     cin >> pilihan;
+
+    for (int i = 0; i < vectorKebijakan.size(); i++)
+    {
+       if ( pilihan == vectorKebijakan.at(i).urutan)
+       {
+            if(vectorKebijakan.at(i).namaKebijakan == "pajak")
+            {
+                vectorKebijakan.at(i).jalankanBiasa(c, b, a);
+            }else if (vectorKebijakan.at(i).namaKebijakan == "kerjasama")
+            {
+                vectorKebijakan.at(i).jalankanBiasa(d, e, a);
+            }else if (vectorKebijakan.at(i).namaKebijakan == "sprey")
+            {
+                vectorKebijakan.at(i).jalankanBiasa(f, g, a);
+            }else if (vectorKebijakan.at(i).namaKebijakan == "festival"){
+                cekFestivalTermina = true;
+            }
+            
+
+            setColor(13);
+            cout << string(lebarLayar, '-') << endl;
+            printTextTengah("KEBIJAKAN TELAH DITERAPKAN", lebarLayar);
+            cout << string(lebarLayar, '-') << endl;
+            setColor(7);
+
+            vectorKebijakanJalan.push_back(vectorKebijakan.at(i));
+            vectorKebijakan.erase(vectorKebijakan.begin()+i);
+
+            break;
+       }else if (pilihan == vectorKebijakan.size()+1)
+       {
+            break;
+       }else{}
+
+    }
+    
+
+};
+
+void festivalTermina(int *a, int *b, int &c) {
+    *a -= 5000;
+    *b = 15;
+    c--;
+    if (c == 0)
+    {
+        //setColor(11) = warna aqua
+        setColor(11); cout << "Festival Termina sudah Berakhir!!! \n" << "Terima Kasih Pa Wali Kota \n";
+        cekFestivalTermina = false;
+        *b = 0;
+    }else{
+        setColor(11); cout << "Festival Termina sedang berlangsung!! \n";
+    }
+    
+}
+
+void pajak(int* c, int* b, int* a){
+    *c += 1000;
+    *b += -15;
+    *a = *a-1;
+};
+
+void kerjasama(int* d, int* e, int* a){
+    *d += 20;
+    *e += 1500;
+    *a = *a-1;
+};
+
+void sprey(int* f, int* g, int* a){
+    *f += 300;
+    *g -= 2000;
+    *a = *a-1;
+};
+
+void fungsiKosong(int* a, int* b, int* c){
+};
+
+void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
+    // a = sisaInteraksi, b = kebahagiaanPemilikPabrik, c = pajakPabrik, 
+    // d = sumberEnergiTambahan, e = biayaKerjasama, f = populasiTambahan, g = uang, h = kebahagiaanSementarai, 
+    //i = hariTerkini
+    setColor(6);
+    printTextTengah("KEBIJAKAN KOTA YANG SUDAH DITERAPKAN", lebarLayar);
+    cout << string(lebarLayar,'-');
+    cout << endl;
+
+    if (vectorKebijakanJalan.empty())
+    {
+        setColor(7);
+        printTextTengah("Tidak Ada Kebijakan Yang Sedang Diterapkan", lebarLayar);
+        cout << endl;
+    }else{
+        
+        for (int i = 0; i < vectorKebijakanJalan.size(); i++)
+        {   
+            if (i+1 == vectorKebijakanJalan.size())
+            {
+                vectorKebijakanJalan.at(i).urutan = i+1;
+                setColor(9); cout << i+1 << ". ";
+                setColor(7); cout << vectorKebijakanJalan.at(i).displayKebijakanJalan << endl;
+                setColor(9); cout << i+2;
+                setColor(7); cout << ". Batal";
+            }else{
+                vectorKebijakanJalan.at(i).urutan = i+1;
+                setColor(9); cout << i+1 << ". ";
+                setColor(7); cout << vectorKebijakanJalan.at(i).displayKebijakanJalan << endl;
+            }
+        }
+
+        cout << endl;
+        setColor(12); cout << "Mau cabut kebijakan yang mana? \n";
+        cout << endl;
+
+        setColor(1); cout << "Pilihan : ";
+        cin >> pilihan;
+
+        for (int i = 0; i < vectorKebijakanJalan.size(); i++)
+        {
+            if (pilihan == vectorKebijakanJalan.at(i).urutan)
+            {
+                if (vectorKebijakanJalan.at(i).namaKebijakan == "pajak")
+                {
+                    *c = 0;
+                    *b = 0;
+                    *a = *a-1;
+                }else if (vectorKebijakanJalan.at(i).namaKebijakan == "festival")
+                {
+                    cekFestivalTermina = false;
+                    *h = 0;
+                    *a--;
+                }else if (vectorKebijakanJalan.at(i).namaKebijakan == "kerjasama")
+                {
+                    *d = 0;
+                    *e = 0;
+                    *a = *a-1;
+                }else if (vectorKebijakanJalan.at(i).namaKebijakan == "sprey")
+                {
+                    *f = 0;
+                    *a = *a-1;
+                }else{}
+
+                vectorKebijakan.push_back(vectorKebijakanJalan.at(i));
+                vectorKebijakanJalan.erase(vectorKebijakanJalan.begin()+i);
+                setColor(13);
+                cout << string(lebarLayar, '-') << endl;
+                printTextTengah("KEBIJAKAN TELAH DICABUT", lebarLayar);
+                cout << string(lebarLayar, '-') << endl;
+                setColor(7);
+                
+            }else if (pilihan == vectorKebijakanJalan.size()+1)
+            {
+                break;
+            }
+            
+        }
+
+    }
+    
+};

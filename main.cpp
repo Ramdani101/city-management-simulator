@@ -402,7 +402,7 @@ void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerja
         if (petaKota[X-1][Y-1] == 'O')
         {
             petaKota[X-1][Y-1] = alias;
-            total++;
+            *total+=1;
             targetKordinatX = X-1;
             targetKordinatY = Y-1;
             uang-=biaya;
@@ -500,19 +500,19 @@ void robohkanFasilitas (int* interaksi){
                             {
                                 case 'P':
                                     setColor(4); cout << index << ". Pabrik (" << i+1 << "," << j <<") ";
-                                    pabrik=pabrik-1;
+                                    Jpabrik=Jpabrik-1;
                                     break;
                                 case 'R':
                                     setColor(5); cout << index << ". Rumah (" << i+1 << "," << j+1 <<") ";
-                                    rumah=rumah-1;
+                                    Jrumah=Jrumah-1;
                                     break;
                                 case 'E':
                                     setColor(10); cout << index << ". Sumber Energi (" << i+1 << "," << j+1 <<") ";
-                                    sumberEnergi=sumberEnergi-1;
+                                    JsumberEnergi=JsumberEnergi-1;
                                     break;
                                 case 'D':
                                     setColor(11); cout << index << ". Destinasi Wisata (" << i+1 << "," << j+1 <<") ";
-                                    destinasiWisata=destinasiWisata-1;
+                                    JdestinasiWisata=JdestinasiWisata-1;
                                     break;
                             }
                             cout << "berhasil dirobohkan \n";

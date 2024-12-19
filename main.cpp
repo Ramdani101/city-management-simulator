@@ -65,13 +65,20 @@ void printTextTengah(const string&, int);
 string plusMinus(int, int);
 void tampilanPilihan();
 void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]);
-void terapkanKebijakan();
+void terapkanKebijakan(int*,int*,int*, int*, int*, int*, int*, int*, int*);
 void robohkanFasilitas(int*);
 void lihatPeta();
 void lihatJumlahFasilitas(int*,int*,int*,int*);
 void statistikPopulasi();
 void save();
 void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY);
+void festivalTermina(int*, int*, int&);
+void pajak(int*, int*, int*);
+void kerjasama(int*, int*, int*);
+void sprey(int*, int*, int*);
+void fungsiKosong(int*, int*, int*);
+void cabutKebijakan(int*,int*,int*, int*, int*, int*, int*, int*, int*);
+
 
 int pilihan = 0;
 int lebarLayar = 50;
@@ -79,8 +86,9 @@ int jatahInteraksi = 3;
 int uang = 0, energi = 0, kebahagiaan = 0, pekerja = 0;
 int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
-int hari = 0;
+int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
 int hariTerkini = 0;
+int kebahagiaanSementara = 0;
 int durasiFestival = 3;
 bool cekFestivalTermina = false;
 char petaKota[6][6] = {
@@ -178,13 +186,14 @@ void campaignMode(){
     JsumberEnergiOn = JsumberEnergi;
     hari = 10;
     hariTerkini = 1;
-    int populasi = Jrumah*100;
+    int pajakPabrik = 0;
+    int populasi = (Jrumah*100) + populasiTambahan;
     int pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
-    int energiMasuk = JsumberEnergiOn*10;
+    int energiMasuk = (JsumberEnergiOn*10) + sumberEnergiTambahan;
     int energiKeluar = (JpabrikOn*5) + (Jrumah*1);
-    int tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5);
-    int pendapatan = JpabrikOn * 3000;
-    int pengeluaran = JsumberEnergiOn*500;
+    int tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
+    int pendapatan = JpabrikOn * (3000 + pajakPabrik);
+    int pengeluaran = (JsumberEnergiOn*500) + biayaKerjasama;
     int rumahCD = 1;
     
     cout << "Pada suatu pagi kamu tiba-tiba terbangun ditempat yang asing \n"
@@ -202,14 +211,26 @@ void campaignMode(){
     bool kembaliKeMenuUtama = false;
     while (hariTerkini <= hari && !kembaliKeMenuUtama)
     {
+        cout << "Ini pendapatan : " << pendapatan << endl;
+        cout << "Ini pengeluaran : " << pengeluaran << endl;
         int sisaInteraksi = jatahInteraksi;
         setColor(6);
         cout << string(lebarLayar, '-') << endl;
         printTextTengah("Hari Ke - " + to_string(hariTerkini), lebarLayar);
-        
+
+        if (cekFestivalTermina) //dicek kalau festival termina itu on maka efeknya menyala
+        {
+            festivalTermina(&uang, &kebahagiaanSementara, durasiFestival);
+        }else{}
+
         while (sisaInteraksi > 0 && !kembaliKeMenuUtama)
         {
+            
             setColor(6); cout << string(lebarLayar, '-') << endl;
+            cout << "Ini pendapatan : " << pendapatan << endl;
+            cout << "Ini pengeluaran : " << pengeluaran << endl;
+            cout << "Ini selesiah pendapat dan pengeluaran : " << abs(pengeluaran - pendapatan) << endl;
+            cout << "Ini jumlah pabrik on : " << JpabrikOn << endl;
             cout << "Uang : $" << uang << " | " << plusMinus(pendapatan, pengeluaran)<< "$" << abs(pengeluaran - pendapatan) << "/hari \n";
             cout << "Populasi : " << populasi << endl;
             cout << "Pekerja : " << pekerja << endl;
@@ -234,21 +255,24 @@ void campaignMode(){
                 sisaInteraksi--;
                 break;
             case 4:
-                lihatPeta();
+                cabutKebijakan(&sisaInteraksi, &kebahagiaanPemilikPabrik, &pajakPabrik, &sumberEnergiTambahan, &biayaKerjasama, &populasiTambahan, &uang, &kebahagiaanSementara, &hariTerkini);
                 break;
             case 5:
-                lihatJumlahFasilitas(&Jpabrik, &Jrumah, &JsumberEnergi, &JdestinasiWisata);
+                lihatPeta();
                 break;
             case 6:
-                statistikPopulasi();
+                lihatJumlahFasilitas(&Jpabrik, &Jrumah, &JsumberEnergi, &JdestinasiWisata);
                 break;
             case 7:
-                sisaInteraksi = 0;
+                statistikPopulasi();
                 break;
             case 8:
-                save();
+                sisaInteraksi = 0;
                 break;
             case 9:
+                save();
+                break;
+            case 10:
                 kembaliKeMenuUtama = true;
                 break;
             default:
@@ -279,13 +303,18 @@ void campaignMode(){
                 JsumberEnergiOn++;
             }
         }
-        uang = uang + (JpabrikOn * pabrik.pendapatan) - (JsumberEnergiOn*sumberEnergi.pendapatan);
-        pendapatan = JpabrikOn * pabrik.pendapatan;
-        pengeluaran = JsumberEnergiOn*sumberEnergi.pendapatan;
-        energiMasuk = JsumberEnergiOn*sumberEnergi.energi;
-        energiKeluar = (JpabrikOn*pabrik.energi) + (Jrumah*rumah.energi);
-        tingkatKebahagiaan = tingkatKebahagiaan + (JdestinasiWisata*destinasiWisata.kebahagiaan) - (JpabrikOn*pabrik.kebahagiaan);
-
+        
+        //untuk update stat esok hari
+        uang += pendapatan - pengeluaran;
+        int populasi = (Jrumah*100) + + populasiTambahan;
+        int pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
+        int energiMasuk = (JsumberEnergiOn*10) + sumberEnergiTambahan;
+        int energiKeluar = (JpabrikOn*5) + (Jrumah*1);
+        int tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
+        int pendapatan = JpabrikOn * (3000 + pajakPabrik);
+        cout << "ini pendapatan : " << pendapatan << endl;
+        int pengeluaran = (JsumberEnergiOn*500) + biayaKerjasama;
+        cout << "ini pengeluaran: " << pengeluaran << endl;
         if(tingkatKebahagiaan < 50)//untuk menghitung mundur dan menghapus sebuah rumah
         {
             cout << "";
@@ -301,13 +330,16 @@ void campaignMode(){
         {
             rumahCD = 1;
         }
+        cout << "Ini pendapatan : " << pendapatan << endl;
+        cout << "Ini pengeluaran : " << pengeluaran << endl;
     } 
 
     if (kembaliKeMenuUtama)
     {
         menuUtama();
     }
-
+    cout << "Ini pendapatan : " << pendapatan << endl;
+    cout << "Ini pengeluaran : " << pengeluaran << endl;
 }
 
 void howTo(){
@@ -367,12 +399,13 @@ void tampilanPilihan(){
     setColor(4); cout << "1. "; setColor(7); cout << "Bangun Fasilitas (interaksi -1) \n";
     setColor(4); cout << "2. "; setColor(7); cout << "Terapkan Kebijakan (interaksi -1) \n";
     setColor(4); cout << "3. "; setColor(7); cout << "Robohkan Fasilitas (interaksi -1) \n";
-    setColor(4); cout << "4. "; setColor(7); cout << "Lihat Peta Kota \n";
-    setColor(4); cout << "5. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
-    setColor(4); cout << "6. "; setColor(7); cout << "Statistik Populasi \n";
-    setColor(4); cout << "7. "; setColor(7); cout << "Akhiri Hari \n";
-    setColor(4); cout << "8. "; setColor(7); cout << "Save \n";
-    setColor(4); cout << "9. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
+    setColor(4); cout << "4. "; setColor(7); cout << "Cabut Kebijakan (interaksi -1) \n";
+    setColor(4); cout << "5. "; setColor(7); cout << "Lihat Peta Kota \n";
+    setColor(4); cout << "6. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
+    setColor(4); cout << "7. "; setColor(7); cout << "Statistik Populasi \n";
+    setColor(4); cout << "8. "; setColor(7); cout << "Akhiri Hari \n";
+    setColor(4); cout << "9. "; setColor(7); cout << "Save \n";
+    setColor(4); cout << "10. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
 }
 
 void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
@@ -430,7 +463,7 @@ void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerja
         if (petaKota[X-1][Y-1] == 'O')
         {
             petaKota[X-1][Y-1] = alias;
-            *total+=1;
+            *total = *total + 1;
             targetKordinatX = X-1;
             targetKordinatY = Y-1;
             uang-=biaya;
@@ -801,8 +834,5 @@ void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int*
         }
 
     }
-    
-
-    
 
 };

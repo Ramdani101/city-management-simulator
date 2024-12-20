@@ -107,6 +107,7 @@ struct Index
     bool aktif = true;
     int x, y;
 };
+
 struct bangunan 
 {
     char alias;
@@ -223,13 +224,12 @@ void campaignMode()
     bool kembaliKeMenuUtama = false;
     while (hariTerkini <= hari && !kembaliKeMenuUtama)
     {
-        eventDinamis(hariEvent, hariTerkini, &pendapatan, pajakPabrik);
         int sisaInteraksi = jatahInteraksi;
         setColor(6);
         cout << string(lebarLayar, '-') << endl;
         printTextTengah("Hari Ke - " + to_string(hariTerkini), lebarLayar);
         setColor(6); cout << string(lebarLayar, '-') << endl;
-
+        eventDinamis(hariEvent, hariTerkini, &pendapatan, pajakPabrik);
         if (cekFestivalTermina)
         {
             festivalTermina(&uang, &kebahagiaanSementara, durasiFestival);
@@ -343,6 +343,7 @@ void campaignMode()
     {
         menuUtama();
     }
+
 }
 
 void howTo()
@@ -681,6 +682,7 @@ void save()
 {
     cout << "Sedang dalam tahap pengembangan \n";
 }
+
 void acakHari(int *hari)
 {
     int random;
@@ -723,7 +725,7 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
         cout << endl;
         if (respon == 1)
         {
-            cout << "Banjir telah diatasi (-$1500)";
+            cout << "Banjir telah diatasi (-$1500) \n";
             uang = uang - 1500;
         }
         if (respon == 2)
@@ -738,7 +740,10 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
     
     if (hariEvent[1] == hariTerkini)
     {
-        cout << "Perhatian !!! Salah satu pabrik di kotamu terbakar! (-1 Pabrik)" << endl;
+        setColor(12);
+        cout << "Perhatian !!! \n";
+        cout << "Salah satu pabrik di kotamu terbakar! (-1 Pabrik)" << endl;
+        cout << endl;
         Jpabrik = Jpabrik - 1;
         JpabrikOn = JpabrikOn - 1;
         for (int i = 0; i < 6; i++)
@@ -799,11 +804,17 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
     }
     if (hariEvent[3] == hariTerkini)
     {
-        cout << "Perhatian !!!! Presiden datang ke kotamu. Beliau datang dengan membawa koper berwarna hitam, apakah ini merupakan pertanda baik? (+$5000)" << endl;
+        setColor(15);
+        cout << "Perhatian !!!! Presiden datang ke kotamu \n";
+        cout << "Beliau datang membawa koper hitam \n";
+        cout << "apakah ini merupakan pertanda baik? \n";
+        cout << "(+$5000)" << endl;
+        cout << endl;
         uang = uang + 5000;
     }
 
 }
+
 
 void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
     // a = sisaInteraksi, b = kebahagiaanPemilikPabrik, c = pajakPabrik, 
@@ -997,3 +1008,4 @@ void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int*
     }
     
 };
+

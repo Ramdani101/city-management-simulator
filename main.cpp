@@ -107,6 +107,7 @@ struct Index
     bool aktif = true;
     int x, y;
 };
+
 struct bangunan 
 {
     char alias;
@@ -229,7 +230,6 @@ void campaignMode()
         printTextTengah("Hari Ke - " + to_string(hariTerkini), lebarLayar);
         setColor(6); cout << string(lebarLayar, '-') << endl;
         eventDinamis(hariEvent, hariTerkini, &pendapatan, pajakPabrik);
-
         if (cekFestivalTermina)
         {
             festivalTermina(&uang, &kebahagiaanSementara, durasiFestival);
@@ -343,6 +343,7 @@ void campaignMode()
     {
         menuUtama();
     }
+
 }
 
 void howTo()
@@ -681,6 +682,7 @@ void save()
 {
     cout << "Sedang dalam tahap pengembangan \n";
 }
+
 void acakHari(int *hari)
 {
     int random;
@@ -812,6 +814,7 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
     }
 
 }
+
 
 void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
     // a = sisaInteraksi, b = kebahagiaanPemilikPabrik, c = pajakPabrik, 
@@ -1005,3 +1008,4 @@ void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int*
     }
     
 };
+

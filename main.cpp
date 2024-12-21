@@ -92,7 +92,7 @@ int uang = 0, energi = 0, kebahagiaan = 0;
 int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
-int hariTerkini = 0;
+int hariTerkini = 0, pajakPabrik = 0;
 int populasi = 0, pekerja = 0, energiMasuk = 0, energiKeluar = 0, tingkatKebahagiaan = 0, pendapatan = 0, pengeluaran = 0, rumahCD = 0;
 double lvlBonus = 0.5; //ini untuk menentukan bonus per level
 
@@ -456,7 +456,7 @@ void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
                 menuBangunFasilitas(pSisaInteraksi, sumberEnergi.alias, sumberEnergi.biaya, sumberEnergi.pekerja, &JsumberEnergi, sumberEnergi.index[JsumberEnergi].x, sumberEnergi.index[JsumberEnergi].y, sumberEnergi.index[JsumberEnergi].isExist);
                 break;
             case 4: 
-                menuBangunFasilitas(pSisaInteraksi, destinasiWisata.alias, destinasiWisata.biaya, destinasiWisata.pekerja, &JdestinasiWisata, destinasiWisata.index[JdestinasiWisata].x, destinasiWisata.index[JdestinasiWisata].y, destinasiWisata.index[JdesnitasiWisata].isExist);
+                menuBangunFasilitas(pSisaInteraksi, destinasiWisata.alias, destinasiWisata.biaya, destinasiWisata.pekerja, &JdestinasiWisata, destinasiWisata.index[JdestinasiWisata].x, destinasiWisata.index[JdestinasiWisata].y, destinasiWisata.index[JdestinasiWisata].isExist);
                 break;
             case 5:
             return;
@@ -714,13 +714,13 @@ void statistikHarian()
     {
         for(int j;j < 36;j++)
         {
-            if(pabrik.index[j].isExist == False)
+            if(pabrik.index[j].isExist == false)
             {
                 swap(pabrik.index[j].isExist, pabrik.index[j+1].isExist);
                 swap(pabrik.index[j].x, pabrik.index[j+1].x);
                 swap(pabrik.index[j].y, pabrik.index[j+1].y);
             }
-            if(rumah.index[j].isExist == False)
+            if(rumah.index[j].isExist == false)
             {
                 swap(rumah.index[j].isExist, rumah.index[j+1].isExist);
                 swap(rumah.index[j].x, rumah.index[j+1].x);
@@ -786,8 +786,8 @@ void statistikHarian()
                 break;
             }
         }
-        tingkatKebahagiaan+= kebahagiaanPemilikPabrik + kebahagiaanSementara
-        pengeluaran+=biayaKerjasama;
+        tingkatKebahagiaan+= kebahagiaanPemilikPabrik + kebahagiaanSementara;
+        pengeluaran +=biayaKerjasama;
         uang = uang + pendapatan - pengeluaran;
         energiMasuk+= sumberEnergiTambahan;
     }

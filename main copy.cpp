@@ -74,7 +74,6 @@ void statistikPopulasi();
 void save();
 void acakHari(int *);
 void eventDinamis(int *, int, int *,int);
-void eventBlueGems(int *, int);
 void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY);
 void festivalTermina(int*, int*, int&);
 void pajak(int*, int*, int*);
@@ -109,7 +108,6 @@ struct Index
     bool isExist = false;
     int x, y;
 };
-
 struct bangunan 
 {
     char alias;
@@ -198,18 +196,7 @@ void campaignMode()
     hari = 10;
     hariTerkini = 1;
     int hariEvent[4];
-    int hariBlueGems[4];
-    srand(time(0));
     acakHari(hariEvent);
-    acakHari(hariBlueGems);
-    for (int i = 0; i < 4; i++)
-    {
-        cout << "event " << hariEvent[i] << endl;
-    }
-    for (int i = 0; i < 4; i++)
-    {
-        cout << "bluegems " << hariBlueGems[i] << endl;
-    }
     int pajakPabrik = 0;
     int populasi = (Jrumah*100) + populasiTambahan;
     int pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
@@ -237,13 +224,13 @@ void campaignMode()
     bool kembaliKeMenuUtama = false;
     while (hariTerkini <= hari && !kembaliKeMenuUtama)
     {
+        eventDinamis(hariEvent, hariTerkini, &pendapatan, pajakPabrik);
         int sisaInteraksi = jatahInteraksi;
         setColor(6);
         cout << string(lebarLayar, '-') << endl;
         printTextTengah("Hari Ke - " + to_string(hariTerkini), lebarLayar);
         setColor(6); cout << string(lebarLayar, '-') << endl;
-        eventDinamis(hariEvent, hariTerkini, &pendapatan, pajakPabrik);
-        eventBlueGems(hariBlueGems, hariTerkini);
+
         if (cekFestivalTermina)
         {
             festivalTermina(&uang, &kebahagiaanSementara, durasiFestival);
@@ -730,6 +717,7 @@ void save()
 void acakHari(int *hari)
 {
     int random;
+    srand(time(0));
     for (int i = 0; i < 4; i++)
     {
         bool same = false;
@@ -748,7 +736,6 @@ void acakHari(int *hari)
         }
     }
 }
-
 void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPabrik)
 {
     int respon;
@@ -769,7 +756,7 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
         cout << endl;
         if (respon == 1)
         {
-            cout << "Banjir telah diatasi (-$1500) \n";
+            cout << "Banjir telah diatasi (-$1500)";
             uang = uang - 1500;
         }
         if (respon == 2)
@@ -784,10 +771,7 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
     
     if (hariEvent[1] == hariTerkini)
     {
-        setColor(12);
-        cout << "Perhatian !!! \n";
-        cout << "Salah satu pabrik di kotamu terbakar! (-1 Pabrik)" << endl;
-        cout << endl;
+        cout << "Perhatian !!! Salah satu pabrik di kotamu terbakar! (-1 Pabrik)" << endl;
         Jpabrik = Jpabrik - 1;
         JpabrikOn = JpabrikOn - 1;
         for (int i = 0; i < 6; i++)
@@ -845,6 +829,7 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
                 {
                     if (petaKota[i][j] == 'R')
                     {
+                        petaKota[i][j] = 'O';
                         for (int k = 0; k < Jrumah; k++)
                         {
                             if (rumah.index[k].x == i && rumah.index[k].y == j)
@@ -852,7 +837,6 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
                                     rumah.index[k].isExist = false;
                                 }
                         }
-                        petaKota[i][j] = 'O';
                         isBreak = true;
                         break;
                     }
@@ -862,46 +846,10 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
     }
     if (hariEvent[3] == hariTerkini)
     {
-        setColor(15);
-        cout << "Perhatian !!!! Presiden datang ke kotamu \n";
-        cout << "Beliau datang membawa koper hitam \n";
-        cout << "apakah ini merupakan pertanda baik? \n";
-        cout << "(+$5000)" << endl;
-        cout << endl;
+        cout << "Perhatian !!!! Presiden datang ke kotamu. Beliau datang dengan membawa koper berwarna hitam, apakah ini merupakan pertanda baik? (+$5000)" << endl;
         uang = uang + 5000;
     }
 
-}
-
-void eventBlueGems(int *hariBlueGems, int hariTerkini)
-{
-    for (int i = 0; i < 4; i++)
-    {
-        if (hariTerkini == hariBlueGems[i])
-        {
-            int respon;
-            setColor(7); cout << "Anda menemukan ";
-            setColor(3); cout << "Blue Gems ";
-            setColor(7); cout << "!!! Apakah anda ingin mengambilnya? " << endl;
-            setColor(4);
-            cout << "1.";
-            setColor(7);
-            cout << "Ya \n";
-            setColor(4);
-            cout << "2.";
-            setColor(7);
-            cout << "Tidak \n";
-            cout << "Pilihan : ";
-            cin >> respon;
-            cout << endl;
-            if (respon == 1)
-            {
-                blueGems++;
-            }else
-            {
-            }
-        }
-    }
 }
 
 void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){

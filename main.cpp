@@ -728,13 +728,13 @@ void statistikHarian()
                 swap(rumah.index[j].x, rumah.index[j+1].x);
                 swap(rumah.index[j].y, rumah.index[j+1].y);
             }
-            if(sumberEnergi.index[j].isExist == False)
+            if(sumberEnergi.index[j].isExist == false)
             {
                 swap(sumberEnergi.index[j].isExist, sumberEnergi.index[j+1].isExist);
                 swap(sumberEnergi.index[j].x, sumberEnergi.index[j+1].x);
                 swap(sumberEnergi.index[j].y, sumberEnergi.index[j+1].y);
             }
-            if(destinasiWisata.index[j].isExist == False)
+            if(destinasiWisata.index[j].isExist == false)
             {
                 swap(destinasiWisata.index[j].isExist, destinasiWisata.index[j+1].isExist);
                 swap(destinasiWisata.index[j].x, destinasiWisata.index[j+1].x);

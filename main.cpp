@@ -83,12 +83,12 @@ void kerjasama(int*, int*, int*);
 void sprey(int*, int*, int*);
 void fungsiKosong(int*, int*, int*);
 void cabutKebijakan(int*,int*,int*, int*, int*, int*, int*, int*, int*);
-
+void ending();
 
 int pilihan = 0;
-int lebarLayar = 50;
+int lebarLayar = 70;
 int jatahInteraksi = 3;
-int uang = 0, energi = 0, kebahagiaan = 0;
+int uang = 0, energi = 0, kebahagiaan = 0, pekerja = 0, blueGems = 0;
 int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
@@ -123,7 +123,6 @@ struct Index
     int y;
     int level;
 };
-
 struct bangunan 
 {
     char alias;
@@ -354,7 +353,10 @@ void campaignMode()
     {
         menuUtama();
     }
-
+    if (hariTerkini == 11 || uang == 0 || energi == 0 || kebahagiaan == 0)
+    {
+        ending();
+    }
 }
 
 void howTo()
@@ -979,7 +981,6 @@ void save()
 {
     cout << "Sedang dalam tahap pengembangan \n";
 }
-
 void acakHari(int *hari)
 {
     int random;
@@ -1111,7 +1112,6 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
     }
 
 }
-
 
 void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
     // a = sisaInteraksi, b = kebahagiaanPemilikPabrik, c = pajakPabrik, 
@@ -1306,3 +1306,53 @@ void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int*
     
 };
 
+void ending()
+{
+    if (blueGems == 4 && hariTerkini == 11)
+    {
+        setColor(11);
+        cout << string(lebarLayar, '-');
+        cout << endl;
+        cout << "Saat malam kamu melihat cahaya yang sangat menyilaukan \n"
+        << "Kamu terbangun dan melihat ke luar rumah \n"
+        << "Saat keluar, kamu melihat 3 UFO mendarat dan terbuka pintunya \n"
+        << "Muncul 3 sosok alien dari UFO tersebut... \n"
+        << "dan membawa mu keluar angkasa bersama mereka \n";
+        cout << endl;
+        string endingUFO = "KAMU MENDAPAT UFO ENDING";
+        printTextTengah(endingUFO, lebarLayar);
+        cout << string(lebarLayar, '-');
+    }
+    else if (hariTerkini != 11)
+    {
+        setColor(12);
+        cout << string(lebarLayar, '-');
+        cout << endl;
+        cout << "Rakyat datang berbondong-bondong ke rumahmu \n" 
+        << "Dengan membawa papan dan berteriak atas kinerjamu yang tidak becus \n"
+        << "Kamu sudah tidak bisa meredam kemarahan rakyat \n"
+        << "Dan diturunkan secara paksa dan tidak hormat oleh rakyat \n";
+        cout << endl;
+        string endingBAD = "KAMU MENDAPAT BAD ENDING";
+        printTextTengah(endingBAD, lebarLayar);
+        cout << string(lebarLayar, '-');
+    }
+    else
+    {
+        setColor(10);
+        cout << string(lebarLayar, '-');
+        cout << endl;
+        cout << "Kamu mendapatkan pesan misterius lagi di ponselmu \n"
+        << "isi pesannya adalah..... \n";
+        setColor(7);
+        cout << "~Wali kota yang sebenarnya akan kembali~ \n";
+        setColor(10);
+        cout << "Kamu pun mengakhiri hari seperti biasa \n" 
+        << "Saat terbangun kamu melihat sekeliling yang ternyata adalah... \n"
+        << "Rumahmu yang semula dengan ragamu yang asli juga \n";
+        cout << endl;
+        string endingGOOD = "KAMU MENDAPAT GOOD ENDING";
+        printTextTengah(endingGOOD, lebarLayar);
+        cout << string(lebarLayar, '-');
+    }
+}

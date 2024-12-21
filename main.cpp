@@ -74,6 +74,7 @@ void statistikPopulasi();
 void save();
 void acakHari(int *);
 void eventDinamis(int *, int, int *,int);
+void eventBlueGems(int *, int);
 void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY);
 void festivalTermina(int*, int*, int&);
 void pajak(int*, int*, int*);
@@ -81,12 +82,12 @@ void kerjasama(int*, int*, int*);
 void sprey(int*, int*, int*);
 void fungsiKosong(int*, int*, int*);
 void cabutKebijakan(int*,int*,int*, int*, int*, int*, int*, int*, int*);
-
+void ending();
 
 int pilihan = 0;
 int lebarLayar = 50;
 int jatahInteraksi = 3;
-int uang = 0, energi = 0, kebahagiaan = 0, pekerja = 0;
+int uang = 0, energi = 0, kebahagiaan = 0, pekerja = 0, blueGems = 0;
 int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
@@ -105,6 +106,7 @@ char petaKota[6][6] = {
 struct Index
 {
     bool aktif = true;
+    bool isExist = false;
     int x, y;
 };
 
@@ -196,7 +198,18 @@ void campaignMode()
     hari = 10;
     hariTerkini = 1;
     int hariEvent[4];
+    int hariBlueGems[4];
+    srand(time(0));
     acakHari(hariEvent);
+    acakHari(hariBlueGems);
+    for (int i = 0; i < 4; i++)
+    {
+        cout << "event " << hariEvent[i] << endl;
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        cout << "bluegems " << hariBlueGems[i] << endl;
+    }
     int pajakPabrik = 0;
     int populasi = (Jrumah*100) + populasiTambahan;
     int pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
@@ -230,6 +243,7 @@ void campaignMode()
         printTextTengah("Hari Ke - " + to_string(hariTerkini), lebarLayar);
         setColor(6); cout << string(lebarLayar, '-') << endl;
         eventDinamis(hariEvent, hariTerkini, &pendapatan, pajakPabrik);
+        eventBlueGems(hariBlueGems, hariTerkini);
         if (cekFestivalTermina)
         {
             festivalTermina(&uang, &kebahagiaanSementara, durasiFestival);
@@ -343,7 +357,10 @@ void campaignMode()
     {
         menuUtama();
     }
-
+    if (hariTerkini == 11 || uang == 0 || energi == 0 || kebahagiaan == 0)
+    {
+        ending();
+    }
 }
 
 void howTo()
@@ -577,18 +594,46 @@ void robohkanFasilitas (int* interaksi){
                             {
                                 case 'P':
                                     setColor(4); cout << index << ". Pabrik (" << i+1 << "," << j <<") ";
+                                    for (int k = 0; k < Jpabrik; k++)
+                                    {
+                                        if (pabrik.index[k].x == i && pabrik.index[k].y == j)
+                                        {
+                                            pabrik.index[k].isExist = false;
+                                        }                                        
+                                    }
                                     Jpabrik=Jpabrik-1;
                                     break;
                                 case 'R':
                                     setColor(5); cout << index << ". Rumah (" << i+1 << "," << j+1 <<") ";
+                                    for (int k = 0; k < Jrumah; k++)
+                                    {
+                                        if (rumah.index[k].x == i && rumah.index[k].y == j)
+                                        {
+                                            rumah.index[k].isExist = false;
+                                        }
+                                    }
                                     Jrumah=Jrumah-1;
                                     break;
                                 case 'E':
                                     setColor(10); cout << index << ". Sumber Energi (" << i+1 << "," << j+1 <<") ";
+                                    for (int k = 0; k < JsumberEnergi; k++)
+                                    {
+                                        if (sumberEnergi.index[k].x == i && sumberEnergi.index[k].y == j)
+                                        {
+                                            sumberEnergi.index[k].isExist = false;
+                                        }
+                                    }
                                     JsumberEnergi=JsumberEnergi-1;
                                     break;
                                 case 'D':
                                     setColor(11); cout << index << ". Destinasi Wisata (" << i+1 << "," << j+1 <<") ";
+                                    for (int k = 0; k < JdestinasiWisata; k++)
+                                    {
+                                        if (destinasiWisata.index[k].x == i && destinasiWisata.index[k].y == j)
+                                        {
+                                            destinasiWisata.index[k].isExist = false;
+                                        }
+                                    }
                                     JdestinasiWisata=JdestinasiWisata-1;
                                     break;
                             }
@@ -682,15 +727,13 @@ void save()
 {
     cout << "Sedang dalam tahap pengembangan \n";
 }
-
 void acakHari(int *hari)
 {
     int random;
-    srand(time(0));
     for (int i = 0; i < 4; i++)
     {
         bool same = false;
-        random = rand() % 10 + 2;
+        random = rand() % 9 + 2;
         for (int j = 0; j < 4; j++)
         {
             if (random == hari[j])
@@ -705,6 +748,7 @@ void acakHari(int *hari)
         }
     }
 }
+
 void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPabrik)
 {
     int respon;
@@ -757,6 +801,13 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
                 if (petaKota[i][j] == 'P')
                 {
                     petaKota[i][j] = 'O';
+                    for (int k = 0; k < Jpabrik; k++)
+                    {
+                        if (pabrik.index[k].x == i && pabrik.index[k].y == j)
+                            {
+                                pabrik.index[k].isExist = false;
+                            }
+                    }
                     isBreak = true;
                     break;
                 }
@@ -794,6 +845,13 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
                 {
                     if (petaKota[i][j] == 'R')
                     {
+                        for (int k = 0; k < Jrumah; k++)
+                        {
+                            if (rumah.index[k].x == i && rumah.index[k].y == j)
+                                {
+                                    rumah.index[k].isExist = false;
+                                }
+                        }
                         petaKota[i][j] = 'O';
                         isBreak = true;
                         break;
@@ -815,6 +873,36 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
 
 }
 
+void eventBlueGems(int *hariBlueGems, int hariTerkini)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (hariTerkini == hariBlueGems[i])
+        {
+            int respon;
+            setColor(7); cout << "Anda menemukan ";
+            setColor(3); cout << "Blue Gems ";
+            setColor(7); cout << "!!! Apakah anda ingin mengambilnya? " << endl;
+            setColor(4);
+            cout << "1.";
+            setColor(7);
+            cout << "Ya \n";
+            setColor(4);
+            cout << "2.";
+            setColor(7);
+            cout << "Tidak \n";
+            cout << "Pilihan : ";
+            cin >> respon;
+            cout << endl;
+            if (respon == 1)
+            {
+                blueGems++;
+            }else
+            {
+            }
+        }
+    }
+}
 
 void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
     // a = sisaInteraksi, b = kebahagiaanPemilikPabrik, c = pajakPabrik, 
@@ -1008,4 +1096,18 @@ void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int*
     }
     
 };
-
+void ending()
+{
+    if (blueGems == 4 && hariTerkini == 11)
+    {
+        printDengan2GarisBawah("Ending UFO");
+    }
+    else if (hariTerkini != 11)
+    {
+        printDengan2GarisBawah("Rakyat tidak puas dengan kebijakanmu. Kamu diturunkan secara tidak hormat.");
+    }
+    else
+    {
+        printDengan2GarisBawah("Masa jabatanmu telah berakhir. Penduduk kota sangat puas dengan kinerjamu.");
+    }
+}

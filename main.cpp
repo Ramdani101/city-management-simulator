@@ -741,6 +741,11 @@ void acakHari(int *hari)
                 i--;
                 same = true;
             }
+            if (random == 11)
+            {
+                i--;
+                same = true;
+            }
         }
         if (same == false)
         {

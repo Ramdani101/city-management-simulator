@@ -94,7 +94,7 @@ int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
 int hariTerkini = 0, pajakPabrik = 0;
-int populasi = 0, pekerja = 0, energiMasuk = 0, energiKeluar = 0, tingkatKebahagiaan = 0, pendapatan = 0, pengeluaran = 0, rumahCD = 0;
+int populasi = 0, energiMasuk = 0, energiKeluar = 0, tingkatKebahagiaan = 0, pendapatan = 0, pengeluaran = 0, rumahCD = 0;
 double lvlBonus = 0.5; //ini untuk menentukan bonus per level
 
 int kebahagiaanSementara = 0;
@@ -742,13 +742,13 @@ void statistikHarian()
                 swap(rumah.index[j].x, rumah.index[j+1].x);
                 swap(rumah.index[j].y, rumah.index[j+1].y);
             }
-            if(sumberEnergi.index[j].isExist == False)
+            if(sumberEnergi.index[j].isExist == false)
             {
                 swap(sumberEnergi.index[j].isExist, sumberEnergi.index[j+1].isExist);
                 swap(sumberEnergi.index[j].x, sumberEnergi.index[j+1].x);
                 swap(sumberEnergi.index[j].y, sumberEnergi.index[j+1].y);
             }
-            if(destinasiWisata.index[j].isExist == False)
+            if(destinasiWisata.index[j].isExist == false)
             {
                 swap(destinasiWisata.index[j].isExist, destinasiWisata.index[j+1].isExist);
                 swap(destinasiWisata.index[j].x, destinasiWisata.index[j+1].x);
@@ -1396,14 +1396,49 @@ void ending()
 {
     if (blueGems == 4 && hariTerkini == 11)
     {
-        printDengan2GarisBawah("Ending UFO");
+        setColor(11);
+        cout << string(lebarLayar, '-');
+        cout << endl;
+        cout << "Saat malam kamu melihat cahaya yang sangat menyilaukan \n"
+        << "Kamu terbangun dan melihat ke luar rumah \n"
+        << "Saat keluar, kamu melihat 3 UFO mendarat dan terbuka pintunya \n"
+        << "Muncul 3 sosok alien dari UFO tersebut... \n"
+        << "dan membawa mu keluar angkasa bersama mereka \n";
+        cout << endl;
+        string endingUFO = "KAMU MENDAPAT UFO ENDING";
+        printTextTengah(endingUFO, lebarLayar);
+        cout << string(lebarLayar, '-');
     }
     else if (hariTerkini != 11)
     {
-        printDengan2GarisBawah("Rakyat tidak puas dengan kebijakanmu. Kamu diturunkan secara tidak hormat.");
+        setColor(12);
+        cout << string(lebarLayar, '-');
+        cout << endl;
+        cout << "Rakyat datang berbondong-bondong ke rumahmu \n" 
+        << "Dengan membawa papan dan berteriak atas kinerjamu yang tidak becus \n"
+        << "Kamu sudah tidak bisa meredam kemarahan rakyat \n"
+        << "Dan diturunkan secara paksa dan tidak hormat oleh rakyat \n";
+        cout << endl;
+        string endingBAD = "KAMU MENDAPAT BAD ENDING";
+        printTextTengah(endingBAD, lebarLayar);
+        cout << string(lebarLayar, '-');
     }
     else
     {
-        printDengan2GarisBawah("Masa jabatanmu telah berakhir. Penduduk kota sangat puas dengan kinerjamu.");
+        setColor(10);
+        cout << string(lebarLayar, '-');
+        cout << endl;
+        cout << "Kamu mendapatkan pesan misterius lagi di ponselmu \n"
+        << "isi pesannya adalah..... \n";
+        setColor(7);
+        cout << "~Wali kota yang sebenarnya akan kembali~ \n";
+        setColor(10);
+        cout << "Kamu pun mengakhiri hari seperti biasa \n" 
+        << "Saat terbangun kamu melihat sekeliling yang ternyata adalah... \n"
+        << "Rumahmu yang semula dengan ragamu yang asli juga \n";
+        cout << endl;
+        string endingGOOD = "KAMU MENDAPAT GOOD ENDING";
+        printTextTengah(endingGOOD, lebarLayar);
+        cout << string(lebarLayar, '-');
     }
 }

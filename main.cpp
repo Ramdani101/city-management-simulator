@@ -202,14 +202,14 @@ void campaignMode()
     srand(time(0));
     acakHari(hariEvent);
     acakHari(hariBlueGems);
-    for (int i = 0; i < 4; i++)
-    {
-        cout << "event " << hariEvent[i] << endl;
-    }
-    for (int i = 0; i < 4; i++)
-    {
-        cout << "bluegems " << hariBlueGems[i] << endl;
-    }
+    // for (int i = 0; i < 4; i++)
+    // {
+    //     cout << "event " << hariEvent[i] << endl;
+    // }
+    // for (int i = 0; i < 4; i++)
+    // {
+    //     cout << "bluegems " << hariBlueGems[i] << endl;
+    // }
     int pajakPabrik = 0;
     int populasi = (Jrumah*100) + populasiTambahan;
     int pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
@@ -882,7 +882,7 @@ void eventBlueGems(int *hariBlueGems, int hariTerkini)
             int respon;
             setColor(7); cout << "Anda menemukan ";
             setColor(3); cout << "Blue Gems ";
-            setColor(7); cout << "!!! Apakah anda ingin mengambilnya? " << endl;
+            setColor(7); cout << "!!! \nApakah anda ingin mengambilnya? " << endl;
             setColor(4);
             cout << "1.";
             setColor(7);

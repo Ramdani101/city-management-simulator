@@ -733,15 +733,10 @@ void acakHari(int *hari)
     for (int i = 0; i < 4; i++)
     {
         bool same = false;
-        random = rand() % 10 + 2;
+        random = rand() % 9 + 2;
         for (int j = 0; j < 4; j++)
         {
             if (random == hari[j])
-            {
-                i--;
-                same = true;
-            }
-            if (random == 11)
             {
                 i--;
                 same = true;

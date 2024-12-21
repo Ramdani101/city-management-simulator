@@ -1130,7 +1130,3 @@ void cabutKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int*
     }
     
 };
-<<<<<<< HEAD
-=======
-
->>>>>>> c2d170eab63b1ba94e1e60f1fcf83f392002ada7

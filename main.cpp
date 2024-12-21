@@ -93,7 +93,7 @@ int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
 int hariTerkini = 0, pajakPabrik = 0;
-int populasi = 0, pekerja = 0, energiMasuk = 0, energiKeluar = 0, tingkatKebahagiaan = 0, pendapatan = 0, pengeluaran = 0, rumahCD = 0;
+int populasi = 0, energiMasuk = 0, energiKeluar = 0, tingkatKebahagiaan = 0, pendapatan = 0, pengeluaran = 0, rumahCD = 0;
 double lvlBonus = 0.5; //ini untuk menentukan bonus per level
 
 int kebahagiaanSementara = 0;

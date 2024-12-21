@@ -85,9 +85,8 @@ void ending();
 
 int pilihan = 0;
 int lebarLayar = 50;
-
 int jatahInteraksi = 3;
-int uang = 0, energi = 0, kebahagiaan = 0, pekerja = 0;
+int uang = 0, energi = 0, kebahagiaan = 0, pekerja = 0, blueGems = 0;
 int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
@@ -108,7 +107,6 @@ struct Index
     bool aktif = true;
     int x, y;
 };
-
 struct bangunan 
 {
     char alias;
@@ -225,7 +223,7 @@ void campaignMode()
     bool kembaliKeMenuUtama = false;
     while (hariTerkini <= hari && !kembaliKeMenuUtama)
     {
-        eventDinamis(hariEvent, hariTerkini, &pendapatan);
+        eventDinamis(hariEvent, hariTerkini, &pendapatan, pajakPabrik);
         int sisaInteraksi = jatahInteraksi;
         setColor(6);
         cout << string(lebarLayar, '-') << endl;
@@ -345,7 +343,6 @@ void campaignMode()
     {
         menuUtama();
     }
-
     if (hariTerkini == 11 || uang == 0 || energi == 0 || kebahagiaan == 0)
     {
         ending();
@@ -546,73 +543,36 @@ void robohkanFasilitas (int* interaksi){
             }
         }
     }
-    setColor(7);
-    cout << index + 1 << ". Back" << "\n";
-    setColor(1);
-    cout << "Pilihan : ";
-    setColor(7);
+    setColor(7); cout << index+1 << ". Back" << "\n";
+    setColor(1); cout << "Pilihan : "; setColor(7);
     cin >> pilihFasilitas;
     cout << endl;
 
-    if (pilihFasilitas == index + 1)
+    if (pilihFasilitas == index+1)
     {
         *interaksi = *interaksi + 1;
-    }
-    else
-    {
-        setColor(6);
-        cout << "Apakah anda yakin? \n";
-        setColor(4);
-        cout << "1. ";
-        cout << "Ya \n";
-        setColor(7);
-        cout << "2. ";
-        cout << "Tidak \n";
-        setColor(1);
-        cout << "Pilihan : ";
-        setColor(7);
+    }else{
+        setColor(6); cout << "Apakah anda yakin? \n";
+        setColor(4); cout << "1. "; cout << "Ya \n";
+        setColor(7); cout << "2. "; cout << "Tidak \n";
+        setColor(1); cout << "Pilihan : "; setColor(7);
         cin >> konfirmasi;
         cout << endl;
 
         if (konfirmasi == 1)
         {
-            index = 0;
+        index = 0;
             for (int i = 0; i < baris; i++)
-            {
-                for (int j = 0; j < kolom; j++)
                 {
-                    switch (petaKota[i][j])
-                    {
-                    case 'O':
-                        break;
-                    default:
-                        index = index + 1;
-                        break;
-                    }
-                    if (index == pilihFasilitas)
+                    for (int j = 0; j < kolom; j++)
                     {
                         switch (petaKota[i][j])
                         {
-                        case 'P':
-                            setColor(4);
-                            cout << index << ". Pabrik (" << i + 1 << "," << j << ") ";
-                            pabrik = pabrik - 1;
+                        case 'O':
                             break;
-                        case 'R':
-                            setColor(5);
-                            cout << index << ". Rumah (" << i + 1 << "," << j + 1 << ") ";
-                            rumah = rumah - 1;
-                            break;
-                        case 'E':
-                            setColor(10);
-                            cout << index << ". Sumber Energi (" << i + 1 << "," << j + 1 << ") ";
-                            sumberEnergi = sumberEnergi - 1;
-                            break;
-                        case 'D':
-                            setColor(11);
-                            cout << index << ". Destinasi Wisata (" << i + 1 << "," << j + 1 << ") ";
-                            destinasiWisata = destinasiWisata - 1;
-                            break;
+                        default:
+                            index=index+1;
+                        break;
                         }
                         if (index == pilihFasilitas)
                         {
@@ -642,14 +602,13 @@ void robohkanFasilitas (int* interaksi){
                         
                     }
                 }
-            }
-            cout << endl;
-        }
-        else
+                cout << endl;
+        }else
         {
             robohkanFasilitas(interaksi);
         }
     }
+   
 }
 void lihatPeta()
 {
@@ -857,7 +816,6 @@ void eventDinamis(int *hariEvent, int hariTerkini, int *pPendapatan, int pajakPa
     }
 
 }
-
 
 void terapkanKebijakan(int* a, int* b, int* c, int* d, int* e, int* f, int* g, int* h, int* i){
     // a = sisaInteraksi, b = kebahagiaanPemilikPabrik, c = pajakPabrik, 
@@ -1067,4 +1025,3 @@ void ending()
         printDengan2GarisBawah("Masa jabatanmu telah berakhir. Penduduk kota sangat puas dengan kinerjamu.");
     }
 }
-

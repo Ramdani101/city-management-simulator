@@ -66,6 +66,7 @@ void printTextTengah(const string &, int);
 string plusMinus(int, int);
 void tampilanPilihan();
 void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]);
+void upgradeFasilitas(int* interaksi);
 void terapkanKebijakan(int*,int*,int*, int*, int*, int*, int*, int*, int*);
 void robohkanFasilitas(int*);
 void lihatPeta();
@@ -74,7 +75,8 @@ void statistikPopulasi();
 void save();
 void acakHari(int *);
 void eventDinamis(int *, int, int *,int);
-void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY);
+void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY, bool &aktif);
+void statistikHarian ();
 void festivalTermina(int*, int*, int&);
 void pajak(int*, int*, int*);
 void kerjasama(int*, int*, int*);
@@ -90,7 +92,10 @@ int uang = 0, energi = 0, kebahagiaan = 0, pekerja = 0, blueGems = 0;
 int Jpabrik = 0, Jrumah = 0, JdestinasiWisata = 0, JsumberEnergi = 0;
 int JpabrikOn = 0, JsumberEnergiOn = 0;
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
-int hariTerkini = 0;
+int hariTerkini = 0, pajakPabrik = 0;
+int populasi = 0, pekerja = 0, energiMasuk = 0, energiKeluar = 0, tingkatKebahagiaan = 0, pendapatan = 0, pengeluaran = 0, rumahCD = 0;
+double lvlBonus = 0.5; //ini untuk menentukan bonus per level
+
 int kebahagiaanSementara = 0;
 int durasiFestival = 4;
 bool cekFestivalTermina = false;
@@ -102,10 +107,21 @@ char petaKota[6][6] = {
     {'E', 'R', 'R', 'R', 'R', 'R'},
     {'E', 'O', 'O', 'O', 'O', 'O'},
 };
+char petaLvlFasilitas[6][6] = {
+    {'O','1','1','1','1','1'},
+    {'O','O','O','O','1','1'},
+    {'O','1','1','1','1','1'},
+    {'1','O','1','O','O','O'},
+    {'1','1','2','2','2','1'},
+    {'1','O','O','O','O','O'},
+};
+
 struct Index
 {
-    bool aktif = true;
-    int x, y;
+    bool isExist = false;
+    int x;
+    int y;
+    int level;
 };
 struct bangunan 
 {
@@ -182,7 +198,39 @@ void menuUtama()
 
 void campaignMode()
 {
-
+    for(int i = 0;i<6;i++)
+    {
+        for(int j = 0;j<6;j++)
+        {
+            switch (petaKota[i][j])
+            {
+                case 'P':
+                    pabrik.index[Jpabrik].aktif = true;
+                    pabrik.index[Jpabrik].x = j;
+                    pabrik.index[Jpabrik].y = i;
+                    Jpabrik++;
+                break;
+                case 'R':
+                    rumah.index[Jrumah].aktif = true;
+                    rumah.index[Jrumah].x = j;
+                    rumah.index[Jrumah].y = i;
+                    Jrumah++;
+                break;
+                case 'E':
+                    sumberEnergi.index[JsumberEnergi].aktif = true;
+                    sumberEnergi.index[JsumberEnergi].x = j;
+                    sumberEnergi.index[JsumberEnergi].y = i;
+                    JsumberEnergi++;
+                break;
+                case 'D':
+                    destinasiWisata.index[JdestinasiWisata].aktif = true;
+                    destinasiWisata.index[JdestinasiWisata].x = j;
+                    destinasiWisata.index[JdestinasiWisata].y = i;
+                    JdestinasiWisata++;
+                break;
+            }
+        }
+    }
     uang = 10000;
     energi = 30;
     kebahagiaan = 50;
@@ -196,15 +244,15 @@ void campaignMode()
     hariTerkini = 1;
     int hariEvent[4];
     acakHari(hariEvent);
-    int pajakPabrik = 0;
-    int populasi = (Jrumah*100) + populasiTambahan;
-    int pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
-    int energiMasuk = (JsumberEnergiOn*10) + sumberEnergiTambahan;
-    int energiKeluar = (JpabrikOn*5) + (Jrumah*1);
-    int tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
-    int pendapatan = JpabrikOn * (3000 + pajakPabrik);
-    int pengeluaran = (JsumberEnergiOn*500) + biayaKerjasama;
-    int rumahCD = 1;
+    pajakPabrik = 0;
+    populasi = (Jrumah*100) + populasiTambahan;
+    pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
+    energiMasuk = (JsumberEnergiOn*10) + sumberEnergiTambahan;
+    energiKeluar = (JpabrikOn*5) + (Jrumah*1);
+    tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
+    pendapatan = JpabrikOn * (3000 + pajakPabrik);
+    pengeluaran = (JsumberEnergiOn*500) + biayaKerjasama;
+    rumahCD = 1;
     
     cout << "Pada suatu pagi kamu tiba-tiba terbangun ditempat yang asing \n"
     << "Tempat asing itu adalah kamar tidur walikota!! \n"
@@ -259,31 +307,34 @@ void campaignMode()
                 bangunFasilitas(&sisaInteraksi, petaKota);
                 break;
             case 2:
-                terapkanKebijakan(&sisaInteraksi, &kebahagiaanPemilikPabrik, &pajakPabrik, &sumberEnergiTambahan, &biayaKerjasama, &populasiTambahan, &uang, &kebahagiaanSementara, &hariTerkini);
+                upgradeFasilitas(&sisaInteraksi);
+                sisaInteraksi--;
                 break;
             case 3:
                 robohkanFasilitas(&sisaInteraksi);
-                sisaInteraksi--;
                 break;
             case 4:
-                cabutKebijakan(&sisaInteraksi, &kebahagiaanPemilikPabrik, &pajakPabrik, &sumberEnergiTambahan, &biayaKerjasama, &populasiTambahan, &uang, &kebahagiaanSementara, &hariTerkini);
+                terapkanKebijakan(&sisaInteraksi, &kebahagiaanPemilikPabrik, &pajakPabrik, &sumberEnergiTambahan, &biayaKerjasama, &populasiTambahan, &uang, &kebahagiaanSementara, &hariTerkini);
                 break;
             case 5:
-                lihatPeta();
+                cabutKebijakan(&sisaInteraksi, &kebahagiaanPemilikPabrik, &pajakPabrik, &sumberEnergiTambahan, &biayaKerjasama, &populasiTambahan, &uang, &kebahagiaanSementara, &hariTerkini);
                 break;
             case 6:
-                lihatJumlahFasilitas(&Jpabrik, &Jrumah, &JsumberEnergi, &JdestinasiWisata);
+                lihatPeta();
                 break;
             case 7:
-                statistikPopulasi();
+                lihatJumlahFasilitas(&Jpabrik, &Jrumah, &JsumberEnergi, &JdestinasiWisata);
                 break;
             case 8:
-                sisaInteraksi = 0;
+                statistikPopulasi();
                 break;
             case 9:
-                save();
+                sisaInteraksi = 0;
                 break;
             case 10:
+                save();
+                break;
+            case 11:
                 kembaliKeMenuUtama = true;
                 break;
             default:
@@ -295,47 +346,7 @@ void campaignMode()
         hariTerkini++;
         // code code di bawah ini untuk menghitung sisa resource dan di tambah untuk besok
         // JpabrikOn dan JsumberEnergiOn untuk menentukan apakah mereka aktif atau enggak - zaki
-        populasi = (Jrumah*rumah.populasi) + populasiTambahan;
-        JpabrikOn = 0;
-        JsumberEnergiOn = 0;
-        pekerja = populasi;
-
-        for(int i = 0; i < Jpabrik + JsumberEnergi;i++)
-        {
-            if (pekerja > pabrik.pekerja && i < Jpabrik)
-            {
-                pekerja -= pabrik.pekerja;
-                JpabrikOn++;
-            }
-
-            if (pekerja > sumberEnergi.pekerja && i < JsumberEnergi)
-            {
-                pekerja -=sumberEnergi.pekerja;
-                JsumberEnergiOn++;
-            }
-        }
-        uang = uang + (JpabrikOn * (pabrik.pendapatan + pajakPabrik)) - (JsumberEnergiOn*sumberEnergi.pendapatan) - biayaKerjasama;
-        pendapatan = JpabrikOn * (pabrik.pendapatan + pajakPabrik);
-        pengeluaran = JsumberEnergiOn*sumberEnergi.pendapatan + biayaKerjasama;
-        energiMasuk = JsumberEnergiOn*sumberEnergi.energi + sumberEnergiTambahan;
-        energiKeluar = (JpabrikOn*pabrik.energi) + (Jrumah*rumah.energi);
-        tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*destinasiWisata.kebahagiaan) - (JpabrikOn*pabrik.kebahagiaan) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
-
-        if(tingkatKebahagiaan < 50)//untuk menghitung mundur dan menghapus sebuah rumah
-        {
-            cout << "";
-            rumahCD++;
-            if(rumahCD%3 == 0)
-            {
-                rumahCD = 1;
-                Jrumah--;
-                petaKota[rumah.index[Jrumah].y][rumah.index[Jrumah].x] = 'O';
-            }
-        }
-        else 
-        {
-            rumahCD = 1;
-        }
+        statistikHarian();
     } 
 
     if (kembaliKeMenuUtama)
@@ -411,15 +422,16 @@ void tampilanPilihan()
 {
     cout << "\033[43m\033[30mPilih Tindakan : \033[0m \n";
     setColor(4); cout << "1. "; setColor(7); cout << "Bangun Fasilitas (interaksi -1) \n";
-    setColor(4); cout << "2. "; setColor(7); cout << "Terapkan Kebijakan (interaksi -1) \n";
+    setColor(4); cout << "2. "; setColor(7); cout << "Tingkatkan Fasilitas (interaksi -1) \n";
     setColor(4); cout << "3. "; setColor(7); cout << "Robohkan Fasilitas (interaksi -1) \n";
-    setColor(4); cout << "4. "; setColor(7); cout << "Cabut Kebijakan (interaksi -1) \n";
-    setColor(4); cout << "5. "; setColor(7); cout << "Lihat Peta Kota \n";
-    setColor(4); cout << "6. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
-    setColor(4); cout << "7. "; setColor(7); cout << "Statistik Populasi \n";
-    setColor(4); cout << "8. "; setColor(7); cout << "Akhiri Hari \n";
-    setColor(4); cout << "9. "; setColor(7); cout << "Save \n";
-    setColor(4); cout << "10. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
+    setColor(4); cout << "4. "; setColor(7); cout << "Terapkan Kebijakan (interaksi -1) \n";
+    setColor(4); cout << "5. "; setColor(7); cout << "Cabut Kebijakan (interaksi -1) \n";
+    setColor(4); cout << "6. "; setColor(7); cout << "Lihat Peta Kota \n";
+    setColor(4); cout << "7. "; setColor(7); cout << "Lihat Jumlah Fasilitas \n";
+    setColor(4); cout << "8. "; setColor(7); cout << "Statistik Populasi \n";
+    setColor(4); cout << "9. "; setColor(7); cout << "Akhiri Hari \n";
+    setColor(4); cout << "10. "; setColor(7); cout << "Save \n";
+    setColor(4); cout << "11. "; setColor(7); cout << "Kembali Ke Menu Utama \n";
 }
 
 void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
@@ -429,24 +441,24 @@ void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
     setColor(13); cout << "2. Rumah\n"; setColor(7); cout << "Biaya : $" << rumah.biaya << "\nPopulasi : +" << rumah.populasi << "\nEnergi : -" << rumah.energi << "MW/hari\n\n";
     setColor(10); cout << "3. Sumber energi\n"; setColor(7); cout << "Biaya : $" << sumberEnergi.biaya << "\nEnergi : +" << sumberEnergi.energi << "MW/hari\nUang : -$" << sumberEnergi.pendapatan << "/hari\nPekerja : -" << sumberEnergi.pekerja << "\n\n";
     setColor(11); cout << "4. Destinasi wisata\n"; setColor(7); cout << "Biaya : $" << destinasiWisata.biaya << "\nKebahagiaan : +" << destinasiWisata.kebahagiaan << "%\n\n";
-    cout << "5. Batal\n\n";
+    cout << "5. Batal\n";
     while (pilihan < 1 || pilihan > 5)
     {
-        setColor(1); cout << "Pilihan : "; setColor(7);
+        setColor(1); cout << "pilihan : ";setColor(7);
         cin >> pilihan;
         switch (pilihan)
         {
             case 1:
-                menuBangunFasilitas(pSisaInteraksi, pabrik.alias, pabrik.biaya, pabrik.pekerja, &Jpabrik, pabrik.index[Jpabrik].x, pabrik.index[Jpabrik].y);
+                menuBangunFasilitas(pSisaInteraksi, pabrik.alias, pabrik.biaya, pabrik.pekerja, &Jpabrik, pabrik.index[Jpabrik].x, pabrik.index[Jpabrik].y, pabrik.index[Jpabrik].isExist);
                 break;
             case 2:
-                menuBangunFasilitas(pSisaInteraksi, rumah.alias, rumah.biaya, rumah.pekerja, &Jrumah, rumah.index[Jrumah].x, rumah.index[Jrumah].y);
+                menuBangunFasilitas(pSisaInteraksi, rumah.alias, rumah.biaya, rumah.pekerja, &Jrumah, rumah.index[Jrumah].x, rumah.index[Jrumah].y, rumah.index[Jrumah].isExist);
                 break;
             case 3: 
-                menuBangunFasilitas(pSisaInteraksi, sumberEnergi.alias, sumberEnergi.biaya, sumberEnergi.pekerja, &JsumberEnergi, sumberEnergi.index[JsumberEnergi].x, sumberEnergi.index[JsumberEnergi].y);
+                menuBangunFasilitas(pSisaInteraksi, sumberEnergi.alias, sumberEnergi.biaya, sumberEnergi.pekerja, &JsumberEnergi, sumberEnergi.index[JsumberEnergi].x, sumberEnergi.index[JsumberEnergi].y, sumberEnergi.index[JsumberEnergi].isExist);
                 break;
             case 4: 
-                menuBangunFasilitas(pSisaInteraksi, destinasiWisata.alias, destinasiWisata.biaya, destinasiWisata.pekerja, &JdestinasiWisata, destinasiWisata.index[JdestinasiWisata].x, destinasiWisata.index[JdestinasiWisata].y);
+                menuBangunFasilitas(pSisaInteraksi, destinasiWisata.alias, destinasiWisata.biaya, destinasiWisata.pekerja, &JdestinasiWisata, destinasiWisata.index[JdestinasiWisata].x, destinasiWisata.index[JdestinasiWisata].y, destinasiWisata.index[JdestinasiWisata].isExist);
                 break;
             case 5:
             return;
@@ -455,7 +467,7 @@ void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
     }
 }
 
-void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY)
+void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY, bool &aktif)
 {
     int X = 0, Y = 0;
     if (uang < biaya && pekerja < pekerjaFasilitas)
@@ -477,9 +489,11 @@ void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerja
         if (petaKota[X-1][Y-1] == 'O')
         {
             petaKota[X-1][Y-1] = alias;
-            *total+=1;
+            petaLvlFasilitas[X-1][Y-1] = '1';
+            total++;
             targetKordinatX = X-1;
             targetKordinatY = Y-1;
+            aktif = true;
             uang-=biaya;
             setColor(13);
             cout << string(lebarLayar, '-') << endl;
@@ -501,8 +515,301 @@ void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerja
     }
 }
 
+void upgradeFasilitas(int* interaksi)
+{
+    int pilihFasilitas;
+    int konfirmasi;
+    int baris = 6;
+    int kolom = 6;
+    int index = 0;
+    cout << "\033[43m\033[30mPilih Fasilitas : \033[0m \n";
+    for (int i = 0; i < baris; i++)
+    {
+        for (int j = 0; j < kolom; j++)
+        {
+            index=index+1;
+            switch (petaKota[i][j])
+            {
+            case 'P':
+                setColor(4); cout << index << ". Pabrik level " << petaLvlFasilitas[i][j] << " (" << i+1 << "," << j <<") \n";
+                break;
+            case 'R':
+                setColor(5); cout << index << ". Rumah level " << petaLvlFasilitas[i][j] << " (" << i+1 << "," << j+1 <<") \n";
+                break;
+            case 'E':
+                setColor(10); cout << index << ". Sumber Energi level " << petaLvlFasilitas[i][j] << " (" << i+1 << "," << j+1 <<") \n";
+                break;
+            case 'D':
+                setColor(11); cout << index << ". Destinasi Wisata level " << petaLvlFasilitas[i][j] << " (" << i+1 << "," << j+1 <<") \n";
+                break;
+            default:
+                index--;
+                break;
+            }
+        }
+    }
+    setColor(7); cout << index+1 << ". Back" << "\n";
+    setColor(1); cout << "Pilihan : "; setColor(7);
+    cin >> pilihFasilitas;
+
+    if (pilihFasilitas == index+1)
+    {
+        *interaksi = *interaksi + 1;
+    }else
+    {
+        setColor(6);cout << string(lebarLayar, '-') << endl;setColor(7);
+        index = 0;
+        for (int i = 0; i < baris; i++)
+        {
+            for (int j = 0; j < kolom; j++)
+            {
+                switch (petaKota[i][j])
+                {
+                    case 'O':
+                    break;
+                    default:
+                        index=index+1;
+                    break;
+                }
+                if (index == pilihFasilitas)
+                {
+                    switch (petaKota[i][j])
+                    {
+                        case 'P':
+                            setColor(12); cout << "Pabrik Level " << petaLvlFasilitas[i][j] << " > " << petaLvlFasilitas[i][j]-47 << '\n'; setColor(7);
+                            cout << "Biaya : $" << 1500 * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << '\n';
+                            cout << "Penghasilan : +$" << pabrik.pendapatan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << "/hari > +$" << pabrik.pendapatan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-48))) << "/hari\n";
+                            cout << "Pekerja : -" << pabrik.pekerja * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << " > -" << pabrik.pekerja * (1+(lvlBonus*(petaLvlFasilitas[i][j]-48))) << "\n\n";
+
+                            setColor(6); cout << "Apakah anda yakin? \n";
+                            setColor(10); cout << "1. "; cout << "Ya \n";
+                            setColor(7); cout << "2. "; cout << "Tidak \n";
+                            setColor(1); cout << "Pilihan : "; setColor(7);
+                            cin >> konfirmasi;
+                            cout << endl;
+                            if (konfirmasi == 1)
+                            {
+                                petaLvlFasilitas[i][j]++;
+                                uang -=1500 * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                                *interaksi = *interaksi -1;
+                                setColor(13);
+                                cout << string(lebarLayar, '-') << endl;
+                                printTextTengah("BANGUNAN BERHASIL DIPERBARUI", lebarLayar);
+                                cout << string(lebarLayar, '-') << endl;
+                                setColor(7);
+                                break;
+                            }
+                            else
+                            {
+                                upgradeFasilitas(interaksi);
+                            }
+                        break;
+                        case 'R':
+                            setColor(13); cout << "Rumah Level " << petaLvlFasilitas[i][j] << " > " << petaLvlFasilitas[i][j]-47 << '\n'; setColor(7);
+                            cout << "Biaya : $" << 250 * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << '\n';
+                            cout << "Populasi : +" << rumah.populasi * (1+(0.5*(petaLvlFasilitas[i][j]-49))) << " > +" << rumah.populasi * (1+(lvlBonus*(petaLvlFasilitas[i][j]-48))) << "\n\n";
+
+                            setColor(6); cout << "Apakah anda yakin? \n";
+                            setColor(10); cout << "1. "; cout << "Ya \n";
+                            setColor(7); cout << "2. "; cout << "Tidak \n";
+                            setColor(1); cout << "Pilihan : "; setColor(7);
+                            cin >> konfirmasi;
+                            cout << endl;
+                            if (konfirmasi == 1)
+                            {
+                                petaLvlFasilitas[i][j]++;
+                                uang -=250 * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                                *interaksi = *interaksi -1;
+                                setColor(13);
+                                cout << string(lebarLayar, '-') << endl;
+                                printTextTengah("BANGUNAN BERHASIL DIPERBARUI", lebarLayar);
+                                cout << string(lebarLayar, '-') << endl;
+                                setColor(7);
+                                break;
+                            }
+                            else
+                            {
+                                upgradeFasilitas(interaksi);
+                            }
+                        break;
+                        case 'E':
+                            setColor(10);cout << "Sumber energi Level " << petaLvlFasilitas[i][j] << " > " << petaLvlFasilitas[i][j]-47 << '\n'; setColor(7);
+                            cout << "Biaya : $" << 750 * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << '\n';
+                            cout << "Energi : +" << sumberEnergi.energi * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << " > +" << sumberEnergi.energi * (1+(lvlBonus*(petaLvlFasilitas[i][j]-48))) << '\n';
+                            cout << "Pengeluaran : -" << sumberEnergi.pendapatan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << " > -" << sumberEnergi.pendapatan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-48))) << '\n';
+                            cout << "Pekerja : -" << sumberEnergi.pekerja * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << " > -" << sumberEnergi.pekerja * (1+(lvlBonus*(petaLvlFasilitas[i][j]-48))) << "\n\n";
+
+                            setColor(6); cout << "Apakah anda yakin? \n";
+                            setColor(10); cout << "1. "; cout << "Ya \n";
+                            setColor(7); cout << "2. "; cout << "Tidak \n";
+                            setColor(1); cout << "Pilihan : "; setColor(7);
+                            cin >> konfirmasi;
+                            cout << endl;
+                            if (konfirmasi == 1)
+                            {
+                                petaLvlFasilitas[i][j]++;
+                                uang -=750 * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                                *interaksi = *interaksi -1;
+                                setColor(13);
+                                cout << string(lebarLayar, '-') << endl;
+                                printTextTengah("BANGUNAN BERHASIL DIPERBARUI", lebarLayar);
+                                cout << string(lebarLayar, '-') << endl;
+                                setColor(7);
+                                break;
+                            }
+                            else
+                            {
+                                upgradeFasilitas(interaksi);
+                            }
+                        break;
+                        case 'D':
+                            setColor(11); cout << "Pabrik Level " << petaLvlFasilitas[i][j] << " > " << petaLvlFasilitas[i][j]-47 << '\n'; setColor(7);
+                            cout << "Biaya : " << 750 * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << '\n';
+                            cout << "Kebahagiaan : +" << destinasiWisata.kebahagiaan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49))) << " > +" << destinasiWisata.kebahagiaan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-48))) << "\n\n";
+
+                            setColor(6); cout << "Apakah anda yakin? \n";
+                            setColor(10); cout << "1. "; cout << "Ya \n";
+                            setColor(7); cout << "2. "; cout << "Tidak \n";
+                            setColor(1); cout << "Pilihan : "; setColor(7);
+                            cin >> konfirmasi;
+                            if (konfirmasi == 1)
+                            {
+                                petaLvlFasilitas[i][j]++;
+                                uang -=750 * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                                *interaksi = *interaksi -1;
+                                setColor(13);
+                                cout << string(lebarLayar, '-') << endl;
+                                printTextTengah("BANGUNAN BERHASIL DIPERBARUI", lebarLayar);
+                                cout << string(lebarLayar, '-') << endl;
+                                setColor(7);
+                                break;
+                            }
+                            else
+                            {
+                                upgradeFasilitas(interaksi);
+                            }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
 void terapkanKebijakan(){
     cout << "Sedang dalam tahap pengembangan \n";
+}
+
+void statistikHarian()
+{
+    populasi = 0;
+    JpabrikOn = 0;
+    JsumberEnergiOn = 0;
+    pendapatan = 0;
+    pengeluaran = 0;
+    energiKeluar = 0;
+    energiMasuk = 0;
+    tingkatKebahagiaan = kebahagiaan;
+    rumahCD = 1;
+
+    for(int i = 0;i < 3;i++)
+    {
+        for(int j;j < 36;j++)
+        {
+            if(pabrik.index[j].isExist == false)
+            {
+                swap(pabrik.index[j].isExist, pabrik.index[j+1].isExist);
+                swap(pabrik.index[j].x, pabrik.index[j+1].x);
+                swap(pabrik.index[j].y, pabrik.index[j+1].y);
+            }
+            if(rumah.index[j].isExist == false)
+            {
+                swap(rumah.index[j].isExist, rumah.index[j+1].isExist);
+                swap(rumah.index[j].x, rumah.index[j+1].x);
+                swap(rumah.index[j].y, rumah.index[j+1].y);
+            }
+            if(sumberEnergi.index[j].isExist == False)
+            {
+                swap(sumberEnergi.index[j].isExist, sumberEnergi.index[j+1].isExist);
+                swap(sumberEnergi.index[j].x, sumberEnergi.index[j+1].x);
+                swap(sumberEnergi.index[j].y, sumberEnergi.index[j+1].y);
+            }
+            if(destinasiWisata.index[j].isExist == False)
+            {
+                swap(destinasiWisata.index[j].isExist, destinasiWisata.index[j+1].isExist);
+                swap(destinasiWisata.index[j].x, destinasiWisata.index[j+1].x);
+                swap(destinasiWisata.index[j].y, destinasiWisata.index[j+1].y);
+            }
+        }
+    }
+
+    for (int i =0; i < 6;i++)
+    {
+        for (int j = 0;j < 6;j++)
+        {
+            if(petaKota[i][j] == 'R')
+            {
+                populasi+= rumah.populasi * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                energiKeluar+= rumah.energi;
+            }
+        }
+    }
+    populasi+= populasiTambahan;
+    pekerja = populasi;
+
+    for(int i = 0; i < 6;i++)
+    {
+        for (int j = 0;j < 6;j++)
+        {
+            switch(petaKota[i][j])
+            {
+                case 'P':
+                    if (pekerja > pabrik.pekerja)
+                    {
+                        pendapatan+= (pabrik.pendapatan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)))) + pajakPabrik;
+                        pekerja-= pabrik.pekerja * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                        tingkatKebahagiaan-=pabrik.kebahagiaan;
+                        energiKeluar+= pabrik.energi;
+                        JpabrikOn++;
+                    }
+                break;
+                case 'E':
+                    if (pekerja > sumberEnergi.pekerja)
+                    {
+                        pengeluaran+= sumberEnergi.pendapatan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                        energiMasuk+= sumberEnergi.energi * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                        pekerja-= sumberEnergi.pekerja * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                        JsumberEnergiOn++;
+                    }
+
+                break;
+                case 'D':
+                    tingkatKebahagiaan+=destinasiWisata.kebahagiaan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                break;
+            }
+        }
+        tingkatKebahagiaan+= kebahagiaanPemilikPabrik + kebahagiaanSementara;
+        pengeluaran +=biayaKerjasama;
+        uang = uang + pendapatan - pengeluaran;
+        energiMasuk+= sumberEnergiTambahan;
+    }
+
+    if(tingkatKebahagiaan < 50)//untuk menghitung mundur dan menghapus sebuah rumah
+    {
+        cout << "";
+        rumahCD++;
+        if(rumahCD%3 == 0)
+        {
+            rumahCD = 1;
+            Jrumah--;
+            petaKota[rumah.index[Jrumah].y][rumah.index[Jrumah].x] = 'O';
+            petaLvlFasilitas[rumah.index[Jrumah].y][rumah.index[Jrumah].x] = 'O';
+        }
+    }
+    else 
+    {
+        rumahCD = 1;
+    }
 }
 
 void robohkanFasilitas (int* interaksi){
@@ -517,24 +824,20 @@ void robohkanFasilitas (int* interaksi){
     {
         for (int j = 0; j < kolom; j++)
         {
-            index = index + 1;
+            index=index+1;
             switch (petaKota[i][j])
             {
             case 'P':
-                setColor(4);
-                cout << index << ". Pabrik (" << i + 1 << "," << j << ") \n";
+                setColor(4); cout << index << ". Pabrik level " << petaLvlFasilitas[i][j] << " (" << i+1 << "," << j <<") \n";
                 break;
             case 'R':
-                setColor(5);
-                cout << index << ". Rumah (" << i + 1 << "," << j + 1 << ") \n";
+                setColor(5); cout << index << ". Rumah level " << petaLvlFasilitas[i][j] << " (" << i+1 << "," << j+1 <<") \n";
                 break;
             case 'E':
-                setColor(10);
-                cout << index << ". Sumber Energi (" << i + 1 << "," << j + 1 << ") \n";
+                setColor(10); cout << index << ". Sumber Energi level " << petaLvlFasilitas[i][j] << " (" << i+1 << "," << j+1 <<") \n";
                 break;
             case 'D':
-                setColor(11);
-                cout << index << ". Destinasi Wisata (" << i + 1 << "," << j + 1 << ") \n";
+                setColor(11); cout << index << ". Destinasi Wisata level " << petaLvlFasilitas[i][j] << " (" << i+1 << "," << j+1 <<") \n";
                 break;
             default:
                 index--;
@@ -597,6 +900,7 @@ void robohkanFasilitas (int* interaksi){
                             cout << "berhasil dirobohkan \n";
                             uang=uang-5;
                             petaKota[i][j] = 'O';
+                            petaLvlFasilitas[i][j] = 'O';
                         }
                         
                     }
@@ -609,12 +913,10 @@ void robohkanFasilitas (int* interaksi){
     }
    
 }
-void lihatPeta()
-{
-    int baris = 6;
-    int kolom = 6;
-    setColor(6);
-    cout << string(25, '-') << endl;
+void lihatPeta(){
+    int baris =6;
+    int kolom =6;
+    setColor(6); cout << string(25,'-') << endl;
     for (int i = 0; i < baris; i++)
     {
         for (int j = 0; j < kolom; j++)
@@ -622,24 +924,19 @@ void lihatPeta()
             switch (petaKota[i][j])
             {
             case 'R':
-                setColor(13);
-                cout << petaKota[i][j] << " ";
+                setColor(13); cout << petaKota[i][j] << petaLvlFasilitas[i][j] << " ";
                 break;
             case 'P':
-                setColor(12);
-                cout << petaKota[i][j] << " ";
+                setColor(12); cout << petaKota[i][j] << petaLvlFasilitas[i][j] << " ";
                 break;
             case 'E':
-                setColor(10);
-                cout << petaKota[i][j] << " ";
+                setColor(10); cout << petaKota[i][j] << petaLvlFasilitas[i][j] << " ";
                 break;
             case 'D':
-                setColor(11);
-                cout << petaKota[i][j] << " ";
+                setColor(11); cout << petaKota[i][j] << petaLvlFasilitas[i][j] << " ";
                 break;
             default:
-                setColor(7);
-                cout << petaKota[i][j] << " ";
+                setColor(7); cout << petaKota[i][j] << petaLvlFasilitas[i][j] << " ";
                 break;
             }
         }

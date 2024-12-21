@@ -75,7 +75,7 @@ void statistikPopulasi();
 void save();
 void acakHari(int *);
 void eventDinamis(int *, int, int *,int);
-void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY);
+void menuBangunFasilitas(int *pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY, bool &aktif);
 void statistikHarian ();
 void festivalTermina(int*, int*, int&);
 void pajak(int*, int*, int*);
@@ -94,7 +94,7 @@ int JpabrikOn = 0, JsumberEnergiOn = 0;
 int hari = 0, kebahagiaanPemilikPabrik = 0, sumberEnergiTambahan = 0, biayaKerjasama = 0, populasiTambahan = 0;
 int hariTerkini = 0;
 int populasi = 0, pekerja = 0, energiMasuk = 0, energiKeluar = 0, tingkatKebahagiaan = 0, pendapatan = 0, pengeluaran = 0, rumahCD = 0;
-double lvlBonus = 100; //ini untuk menentukan bonus per level
+double lvlBonus = 0.5; //ini untuk menentukan bonus per level
 
 int kebahagiaanSementara = 0;
 int durasiFestival = 4;
@@ -118,6 +118,7 @@ char petaLvlFasilitas[6][6] = {
 
 struct Index
 {
+    bool isExist = false;
     int x;
     int y;
     int level;
@@ -198,7 +199,39 @@ void menuUtama()
 
 void campaignMode()
 {
-
+    for(int i = 0;i<6;i++)
+    {
+        for(int j = 0;j<6;j++)
+        {
+            switch (petaKota[i][j])
+            {
+                case 'P':
+                    pabrik.index[Jpabrik].aktif = true;
+                    pabrik.index[Jpabrik].x = j;
+                    pabrik.index[Jpabrik].y = i;
+                    Jpabrik++;
+                break;
+                case 'R':
+                    rumah.index[Jrumah].aktif = true;
+                    rumah.index[Jrumah].x = j;
+                    rumah.index[Jrumah].y = i;
+                    Jrumah++;
+                break;
+                case 'E':
+                    sumberEnergi.index[JsumberEnergi].aktif = true;
+                    sumberEnergi.index[JsumberEnergi].x = j;
+                    sumberEnergi.index[JsumberEnergi].y = i;
+                    JsumberEnergi++;
+                break;
+                case 'D':
+                    destinasiWisata.index[JdestinasiWisata].aktif = true;
+                    destinasiWisata.index[JdestinasiWisata].x = j;
+                    destinasiWisata.index[JdestinasiWisata].y = i;
+                    JdestinasiWisata++;
+                break;
+            }
+        }
+    }
     uang = 10000;
     energi = 30;
     kebahagiaan = 50;
@@ -212,15 +245,15 @@ void campaignMode()
     hariTerkini = 1;
     int hariEvent[4];
     acakHari(hariEvent);
-    int pajakPabrik = 0;
-    int populasi = (Jrumah*100) + populasiTambahan;
-    int pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
-    int energiMasuk = (JsumberEnergiOn*10) + sumberEnergiTambahan;
-    int energiKeluar = (JpabrikOn*5) + (Jrumah*1);
-    int tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
-    int pendapatan = JpabrikOn * (3000 + pajakPabrik);
-    int pengeluaran = (JsumberEnergiOn*500) + biayaKerjasama;
-    int rumahCD = 1;
+    pajakPabrik = 0;
+    populasi = (Jrumah*100) + populasiTambahan;
+    pekerja = populasi - (JpabrikOn*50) - (JsumberEnergiOn*50);
+    energiMasuk = (JsumberEnergiOn*10) + sumberEnergiTambahan;
+    energiKeluar = (JpabrikOn*5) + (Jrumah*1);
+    tingkatKebahagiaan = kebahagiaan + (JdestinasiWisata*5) - (JpabrikOn*5) + kebahagiaanPemilikPabrik + kebahagiaanSementara;
+    pendapatan = JpabrikOn * (3000 + pajakPabrik);
+    pengeluaran = (JsumberEnergiOn*500) + biayaKerjasama;
+    rumahCD = 1;
     
     cout << "Pada suatu pagi kamu tiba-tiba terbangun ditempat yang asing \n"
     << "Tempat asing itu adalah kamar tidur walikota!! \n"
@@ -406,24 +439,24 @@ void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
     setColor(13); cout << "2. Rumah\n"; setColor(7); cout << "Biaya : $" << rumah.biaya << "\nPopulasi : +" << rumah.populasi << "\nEnergi : -" << rumah.energi << "MW/hari\n\n";
     setColor(10); cout << "3. Sumber energi\n"; setColor(7); cout << "Biaya : $" << sumberEnergi.biaya << "\nEnergi : +" << sumberEnergi.energi << "MW/hari\nUang : -$" << sumberEnergi.pendapatan << "/hari\nPekerja : -" << sumberEnergi.pekerja << "\n\n";
     setColor(11); cout << "4. Destinasi wisata\n"; setColor(7); cout << "Biaya : $" << destinasiWisata.biaya << "\nKebahagiaan : +" << destinasiWisata.kebahagiaan << "%\n\n";
-    cout << "5. Batal\n\n";
+    cout << "5. Batal\n";
     while (pilihan < 1 || pilihan > 5)
     {
-        cout << "\033[43m\033[30mPilihan: \033[0m \n";
+        setColor(1); cout << "pilihan : ";setColor(7);
         cin >> pilihan;
         switch (pilihan)
         {
             case 1:
-                menuBangunFasilitas(pSisaInteraksi, pabrik.alias, pabrik.biaya, pabrik.pekerja, &Jpabrik, pabrik.index[Jpabrik].x, pabrik.index[Jpabrik].y);
+                menuBangunFasilitas(pSisaInteraksi, pabrik.alias, pabrik.biaya, pabrik.pekerja, &Jpabrik, pabrik.index[Jpabrik].x, pabrik.index[Jpabrik].y, pabrik.index[Jpabrik].isExist);
                 break;
             case 2:
-                menuBangunFasilitas(pSisaInteraksi, rumah.alias, rumah.biaya, rumah.pekerja, &Jrumah, rumah.index[Jrumah].x, rumah.index[Jrumah].y);
+                menuBangunFasilitas(pSisaInteraksi, rumah.alias, rumah.biaya, rumah.pekerja, &Jrumah, rumah.index[Jrumah].x, rumah.index[Jrumah].y, rumah.index[Jrumah].isExist);
                 break;
             case 3: 
-                menuBangunFasilitas(pSisaInteraksi, sumberEnergi.alias, sumberEnergi.biaya, sumberEnergi.pekerja, &JsumberEnergi, sumberEnergi.index[JsumberEnergi].x, sumberEnergi.index[JsumberEnergi].y);
+                menuBangunFasilitas(pSisaInteraksi, sumberEnergi.alias, sumberEnergi.biaya, sumberEnergi.pekerja, &JsumberEnergi, sumberEnergi.index[JsumberEnergi].x, sumberEnergi.index[JsumberEnergi].y, sumberEnergi.index[JsumberEnergi].isExist);
                 break;
             case 4: 
-                menuBangunFasilitas(pSisaInteraksi, destinasiWisata.alias, destinasiWisata.biaya, destinasiWisata.pekerja, &JdestinasiWisata, destinasiWisata.index[JdestinasiWisata].x, destinasiWisata.index[JdestinasiWisata].y);
+                menuBangunFasilitas(pSisaInteraksi, destinasiWisata.alias, destinasiWisata.biaya, destinasiWisata.pekerja, &JdestinasiWisata, destinasiWisata.index[JdestinasiWisata].x, destinasiWisata.index[JdestinasiWisata].y, destinasiWisata.index[JdesnitasiWisata].isExist);
                 break;
             case 5:
             return;
@@ -432,7 +465,7 @@ void bangunFasilitas (int *pSisaInteraksi, char petaKota[6][6]){
     }
 }
 
-void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY)
+void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerjaFasilitas,int* total, int &targetKordinatX, int &targetKordinatY, bool &aktif)
 {
     int X = 0, Y = 0;
     if (uang < biaya && pekerja < pekerjaFasilitas)
@@ -458,6 +491,7 @@ void menuBangunFasilitas(int* pSisaInteraksi, char alias, int biaya, int pekerja
             total++;
             targetKordinatX = X-1;
             targetKordinatY = Y-1;
+            aktif = true;
             uang-=biaya;
             setColor(13);
             cout << string(lebarLayar, '-') << endl;
@@ -676,6 +710,37 @@ void statistikHarian()
     tingkatKebahagiaan = kebahagiaan;
     rumahCD = 1;
 
+    for(int i = 0;i < 3;i++)
+    {
+        for(int j;j < 36;j++)
+        {
+            if(pabrik.index[j].isExist == False)
+            {
+                swap(pabrik.index[j].isExist, pabrik.index[j+1].isExist);
+                swap(pabrik.index[j].x, pabrik.index[j+1].x);
+                swap(pabrik.index[j].y, pabrik.index[j+1].y);
+            }
+            if(rumah.index[j].isExist == False)
+            {
+                swap(rumah.index[j].isExist, rumah.index[j+1].isExist);
+                swap(rumah.index[j].x, rumah.index[j+1].x);
+                swap(rumah.index[j].y, rumah.index[j+1].y);
+            }
+            if(sumberEnergi.index[j].isExist == False)
+            {
+                swap(sumberEnergi.index[j].isExist, sumberEnergi.index[j+1].isExist);
+                swap(sumberEnergi.index[j].x, sumberEnergi.index[j+1].x);
+                swap(sumberEnergi.index[j].y, sumberEnergi.index[j+1].y);
+            }
+            if(destinasiWisata.index[j].isExist == False)
+            {
+                swap(destinasiWisata.index[j].isExist, destinasiWisata.index[j+1].isExist);
+                swap(destinasiWisata.index[j].x, destinasiWisata.index[j+1].x);
+                swap(destinasiWisata.index[j].y, destinasiWisata.index[j+1].y);
+            }
+        }
+    }
+
     for (int i =0; i < 6;i++)
     {
         for (int j = 0;j < 6;j++)
@@ -687,7 +752,7 @@ void statistikHarian()
             }
         }
     }
-
+    populasi+= populasiTambahan;
     pekerja = populasi;
 
     for(int i = 0; i < 6;i++)
@@ -699,7 +764,7 @@ void statistikHarian()
                 case 'P':
                     if (pekerja > pabrik.pekerja)
                     {
-                        pendapatan+= pabrik.pendapatan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
+                        pendapatan+= (pabrik.pendapatan * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)))) + pajakPabrik;
                         pekerja-= pabrik.pekerja * (1+(lvlBonus*(petaLvlFasilitas[i][j]-49)));
                         tingkatKebahagiaan-=pabrik.kebahagiaan;
                         energiKeluar+= pabrik.energi;
@@ -721,7 +786,10 @@ void statistikHarian()
                 break;
             }
         }
+        tingkatKebahagiaan+= kebahagiaanPemilikPabrik + kebahagiaanSementara
+        pengeluaran+=biayaKerjasama;
         uang = uang + pendapatan - pengeluaran;
+        energiMasuk+= sumberEnergiTambahan;
     }
 
     if(tingkatKebahagiaan < 50)//untuk menghitung mundur dan menghapus sebuah rumah
